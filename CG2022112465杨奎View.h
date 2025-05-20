@@ -33,6 +33,11 @@ public:
 	glm::dvec3 WCS2DCS(const glm::dvec3& p); //世界坐标转设备坐标
 	bool AddRenderable(std::shared_ptr<CGNode> r) const;
 
+protected:
+	UINT mTimer = 0; //定时器
+public:
+	UINT toggleFrameTimer(); //触发/关闭定时器
+
 // 特性
 public:
 	CCG2022112465杨奎Doc* GetDocument() const;
@@ -74,6 +79,7 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 #ifndef _DEBUG  // CG2022112465杨奎View.cpp 中的调试版本

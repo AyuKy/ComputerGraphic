@@ -60,6 +60,8 @@ public:
 protected:
 	CGGroup* mSelectedGroup = nullptr;
 	HTREEITEM mSelectedItem = nullptr;
+protected:
+	UINT mTimer = 0; //定时器
 
 // 生成的消息映射函数
 protected:
@@ -89,4 +91,6 @@ public:
 
 	afx_msg void OnDraw3dSphere();
 	afx_msg void OnDraw3dSphereface();
+	afx_msg void OnBtnTimer();
+	afx_msg void OnUpdateBtnTimer(CCmdUI* pCmdUI);
 };

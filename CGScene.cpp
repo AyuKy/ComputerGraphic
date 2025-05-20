@@ -33,19 +33,20 @@ void CGScene::SetSceneData(std::shared_ptr<CGNode> root)
 //渲染场景
 bool CGScene::Render(CGRenderContext* pRC, CGCamera* pCamera)
 {
+	if (mRoot == nullptr || pRC == nullptr || pCamera == nullptr)
+		return false;
 	//每次绘制场景各节点前先清除背景（此处是颜色缓存）
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	if (pRC == nullptr || pCamera == nullptr)
-		return false;
 	//场景节点更新
+	mRoot->update();
 	//相机投影
 	//pCamera->Projection(pCamera->ProjectionMode());
 	//绘制
 	mRoot->Render(pRC, pCamera);
-	
+	//绘制场景世界坐标系
 	DrawWCS(pCamera);
+	return true;
 }
 
 

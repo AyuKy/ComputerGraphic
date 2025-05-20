@@ -44,6 +44,8 @@
 #include "CGCube.h"
 #include "CGSphere.h"
 #include "CInputDialog1.h"
+#include "RobotBodyTransformParam.h"
+#include "RobotBodyRotate.h"
 
 // CCG2022112465杨奎Doc
 
@@ -67,6 +69,8 @@ BEGIN_MESSAGE_MAP(CCG2022112465杨奎Doc, CDocument)
 
 	ON_COMMAND(ID_Draw3D_Sphere, &CCG2022112465杨奎Doc::OnDraw3dSphere)
 	ON_COMMAND(ID_Draw3D_Sphereface, &CCG2022112465杨奎Doc::OnDraw3dSphereface)
+	ON_COMMAND(ID_Timer, &CCG2022112465杨奎Doc::OnBtnTimer)
+	ON_UPDATE_COMMAND_UI(ID_Timer, &CCG2022112465杨奎Doc::OnUpdateBtnTimer)
 END_MESSAGE_MAP()
 
 
@@ -125,6 +129,13 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	e2->AddChild(c2);
 	t2->AddChild(e2);
 	mScene->GetSceneData()->asGroup()->AddChild(t2);
+
+	//以上语句按参考资料4中文档类构造函数，添加两个立方体节点实例到场景。t2是左边立方体
+ //更新回调测试
+	std::shared_ptr<RobotBodyTransformParam> data = std::make_shared<RobotBodyTransformParam>();
+	std::shared_ptr<RobotBodyRotate> rc = std::make_shared<RobotBodyRotate>();
+	t1->setUserData(data); //设置节点更新参数
+	t1->SetUpdateCallback(rc); //设置节点更新回调
 }
 
 CCG2022112465杨奎Doc::~CCG2022112465杨奎Doc()
@@ -941,4 +952,28 @@ void CCG2022112465杨奎Doc::OnDraw3dSphereface()
 		AddRenderable(t1);
 	}
 	UpdateAllViews(NULL);
+}
+
+void CCG2022112465杨奎Doc::OnBtnTimer()
+{
+	// TODO: 在此添加命令处理程序代码
+	CCG2022112465杨奎View* view = nullptr;
+	POSITION pos = GetFirstViewPosition();
+	while (pos != NULL)
+	{
+		CView* pView = GetNextView(pos);
+		if (pView->IsKindOf(RUNTIME_CLASS(CCG2022112465杨奎View))) {
+			view = dynamic_cast<CCG2022112465杨奎View*>(pView);
+			break;
+		}
+	}
+	if (view != nullptr) {
+		mTimer = view->toggleFrameTimer();// 启动定时器
+	}
+}
+
+void CCG2022112465杨奎Doc::OnUpdateBtnTimer(CCmdUI* pCmdUI)
+{
+	// TODO: 在此添加命令更新用户界面处理程序代码
+	pCmdUI->SetCheck(mTimer != 0);
 }
