@@ -16,6 +16,7 @@ public:
 	virtual bool AddChild(std::shared_ptr<CGNode> child);
 	virtual bool InsertChild(unsigned int index, std::shared_ptr<CGNode>& child);
 
+	virtual void update() override;
 	//子节点操作
 	virtual unsigned int GetNumChildren() const;
 	CGNode* GetChild(unsigned int i);
