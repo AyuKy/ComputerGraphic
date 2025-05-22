@@ -90,52 +90,255 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	//mScene->SetSceneData(g);
 
 	
-	//球体模型
-	auto c = std::make_shared<CGSphere>(100);
-	auto h = std::make_shared<TessellationHints>();
-	c->setTessellationHints(h);
-	c->setDisplayListEnabled(true);
-	//右球体实例节点
-	auto t1 = std::make_shared<CGTransform>(); //实列组节点
-	auto e1 = std::make_shared<CGGeode>(); //实列叶节点
-	auto color1 = std::make_shared<CGColor>(); //属性
-	color1->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //黄色
-	e1->gocRenderStateSet()->setRenderState(color1, -1); //设置节点属性
-	auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
-	t1->translate(100, 0, 0);
-	t1->rotate(45, 1, 1, 1);
-	//t1->scale(100, 100, 100);
-	e1->AddChild(c);
-	t1->AddChild(e1);
-	mScene->GetSceneData()->asGroup()->AddChild(t1);
+	////球体模型
+	//auto c = std::make_shared<CGSphere>(100);
+	//auto h = std::make_shared<TessellationHints>();
+	//c->setTessellationHints(h);
+	//c->setDisplayListEnabled(true);
+	////右球体实例节点
+	//auto t1 = std::make_shared<CGTransform>(); //实列组节点
+	//auto e1 = std::make_shared<CGGeode>(); //实列叶节点
+	//auto color1 = std::make_shared<CGColor>(); //属性
+	//color1->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //黄色
+	//e1->gocRenderStateSet()->setRenderState(color1, -1); //设置节点属性
+	//auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	//e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
+	//t1->translate(100, 0, 0);
+	//t1->rotate(45, 1, 1, 1);
+	////t1->scale(100, 100, 100);
+	//e1->AddChild(c);
+	//t1->AddChild(e1);
+	//mScene->GetSceneData()->asGroup()->AddChild(t1);
 
-	//长方体模型
-	auto c2 = std::make_shared<CGCube>();
-	auto h2 = std::make_shared<TessellationHints>();
-	c2->setTessellationHints(h2);
-	c2->setDisplayListEnabled(true);
-	//左长方体节点
-	auto t2 = std::make_shared<CGTransform>(); //实列组节点
-	auto e2 = std::make_shared<CGGeode>(); //实列叶节点
-	auto color2 = std::make_shared<CGColor>(); //属性
-	color2->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
-	e2->gocRenderStateSet()->setRenderState(color2, -1); //设置节点属性
-	auto p2 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	e2->gocRenderStateSet()->setRenderState(p2, -1); //设置节点属性
-	t2->translate(-100, 0, 0);
-	t2->rotate(45, 1, 1, 1);
-	t2->scale(100, 100, 100);
-	e2->AddChild(c2);
-	t2->AddChild(e2);
-	mScene->GetSceneData()->asGroup()->AddChild(t2);
+	////长方体模型
+	//auto c2 = std::make_shared<CGCube>();
+	//auto h2 = std::make_shared<TessellationHints>();
+	//c2->setTessellationHints(h2);
+	//c2->setDisplayListEnabled(true);
+	////左长方体节点
+	//auto t2 = std::make_shared<CGTransform>(); //实列组节点
+	//auto e2 = std::make_shared<CGGeode>(); //实列叶节点
+	//auto color2 = std::make_shared<CGColor>(); //属性
+	//color2->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
+	//e2->gocRenderStateSet()->setRenderState(color2, -1); //设置节点属性
+	//auto p2 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	//e2->gocRenderStateSet()->setRenderState(p2, -1); //设置节点属性
+	//t2->translate(-100, 0, 0);
+	//t2->rotate(45, 1, 1, 1);
+	//t2->scale(100, 100, 100);
+	//e2->AddChild(c2);
+	//t2->AddChild(e2);
+	//mScene->GetSceneData()->asGroup()->AddChild(t2);
 
-	//以上语句按参考资料4中文档类构造函数，添加两个立方体节点实例到场景。t2是左边立方体
- //更新回调测试
-	std::shared_ptr<RobotBodyTransformParam> data = std::make_shared<RobotBodyTransformParam>();
-	std::shared_ptr<RobotBodyRotate> rc = std::make_shared<RobotBodyRotate>();
-	t1->setUserData(data); //设置节点更新参数
-	t1->SetUpdateCallback(rc); //设置节点更新回调
+
+
+
+	// 1. 创建躯干
+	auto torsoCube = std::make_shared<CGCube>(60, 100, 30); // 躯干尺寸
+	auto torsoHints = std::make_shared<TessellationHints>();
+	torsoCube->setTessellationHints(torsoHints);
+	torsoCube->setDisplayListEnabled(true);
+
+	auto torsoTrans = std::make_shared<CGTransform>();//实例躯干组节点
+	auto torsoGeode = std::make_shared<CGGeode>();//实例躯干叶节点
+	auto torsoColor = std::make_shared<CGColor>(); //躯干颜色属性
+	torsoColor->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
+	torsoCube->gocRenderStateSet()->setRenderState(torsoColor, -1); //设置节点属性
+	//auto torsoP = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	//torsoGeode->gocRenderStateSet()->setRenderState(torsoP, -1); //设置节点属性
+	//torsoTrans->rotate(15, 1, 0, 0);
+	torsoGeode->AddChild(torsoCube);
+	torsoTrans->AddChild(torsoGeode);
+
+	// 2. 创建头部
+	auto headCube = std::make_shared<CGCube>(40, 40, 40); // 头部尺寸
+	auto headHints = std::make_shared<TessellationHints>();
+	headCube->setTessellationHints(headHints);
+	headCube->setDisplayListEnabled(true);
+	auto headColor = std::make_shared<CGColor>(); //颜色属性
+	headColor->setValue(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); //红色
+	headCube->gocRenderStateSet()->setRenderState(headColor, -1); //设置节点属性
+
+	auto headTrans = std::make_shared<CGTransform>();//实例头部组节点
+	headTrans->translate(0, 80, 0); // 相对躯干顶部
+	auto headGeode = std::make_shared<CGGeode>();//实例头部叶节点
+
+	headGeode->AddChild(headCube);
+	headTrans->AddChild(headGeode);
+	torsoTrans->AddChild(headTrans);
+
+	// 3. 创建右上臂
+	auto rightUpperArmCube = std::make_shared<CGCube>(20, 50, 20); // 右上臂尺寸
+	auto rightUpperArmHints = std::make_shared<TessellationHints>();
+	rightUpperArmCube->setTessellationHints(rightUpperArmHints);
+	rightUpperArmCube->setDisplayListEnabled(true);
+	auto rightUpperArmColor = std::make_shared<CGColor>(); //颜色属性
+	rightUpperArmColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
+	rightUpperArmCube->gocRenderStateSet()->setRenderState(rightUpperArmColor, -1); //设置节点属性
+
+	auto rightUpperArmTrans = std::make_shared<CGTransform>();
+	rightUpperArmTrans->translate(50, 40, 0); // 躯干右上
+	auto rightUpperArmGeode = std::make_shared<CGGeode>();
+
+	rightUpperArmGeode->AddChild(rightUpperArmCube);
+	rightUpperArmTrans->AddChild(rightUpperArmGeode);
+
+	// 4. 创建右下臂
+	auto rightLowerArmCube = std::make_shared<CGCube>(18, 40, 18); // 右下臂尺寸
+	auto rightLowerArmHints = std::make_shared<TessellationHints>();
+	rightLowerArmCube->setTessellationHints(rightLowerArmHints);
+	rightLowerArmCube->setDisplayListEnabled(true);
+	auto rightLowerArmColor = std::make_shared<CGColor>(); //颜色属性
+	rightLowerArmColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
+	rightLowerArmCube->gocRenderStateSet()->setRenderState(rightLowerArmColor, -1); //设置节点属性
+
+	auto rightLowerArmTrans = std::make_shared<CGTransform>();
+	rightLowerArmTrans->translate(0, -40, 0); // 上臂底部
+	auto rightLowerArmGeode = std::make_shared<CGGeode>();
+
+	rightLowerArmGeode->AddChild(rightLowerArmCube);
+	rightLowerArmTrans->AddChild(rightLowerArmGeode);
+	rightUpperArmTrans->AddChild(rightLowerArmTrans);
+
+	// 5. 创建右手掌
+	auto rightHandCube = std::make_shared<CGCube>(16, 16, 16); // 手掌尺寸
+	auto rightHandHints = std::make_shared<TessellationHints>();
+	rightHandCube->setTessellationHints(rightHandHints);
+	rightHandCube->setDisplayListEnabled(true);
+	auto rightHandColor = std::make_shared<CGColor>(); //颜色属性
+	rightHandColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
+	rightHandCube->gocRenderStateSet()->setRenderState(rightHandColor, -1); //设置节点属性
+
+	auto rightHandTrans = std::make_shared<CGTransform>();
+	rightHandTrans->translate(0, -30, 0); // 下臂底部
+	auto rightHandGeode = std::make_shared<CGGeode>();
+
+	rightHandGeode->AddChild(rightHandCube);
+	rightHandTrans->AddChild(rightHandGeode);
+	rightLowerArmTrans->AddChild(rightHandTrans);
+
+	// 6. 创建右手指（示例：2根）
+	auto fingerCube = std::make_shared<CGCube>(4, 12, 4);// 手指尺寸
+	auto fingerHints = std::make_shared<TessellationHints>();
+	fingerCube->setTessellationHints(fingerHints);
+	fingerCube->setDisplayListEnabled(true);
+	auto fingerColor = std::make_shared<CGColor>(); //颜色属性
+	fingerColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
+	fingerCube->gocRenderStateSet()->setRenderState(fingerColor, -1); //设置节点属性
+
+	auto fingerTrans1 = std::make_shared<CGTransform>();
+	fingerTrans1->translate(-6, -12, 0); // 手掌底部
+	auto fingerGeode1 = std::make_shared<CGGeode>();
+
+	auto fingerTrans2 = std::make_shared<CGTransform>();
+	fingerTrans2->translate(6, -12, 0); // 手掌底部
+	auto fingerGeode2 = std::make_shared<CGGeode>();
+
+	fingerGeode1->AddChild(fingerCube);
+	fingerTrans1->AddChild(fingerGeode1);
+	rightHandTrans->AddChild(fingerTrans1);
+	fingerGeode2->AddChild(fingerCube);
+	fingerTrans2->AddChild(fingerGeode2);
+	rightHandTrans->AddChild(fingerTrans2);
+
+
+	// 7. 创建左上臂
+	auto leftUpperArmCube = std::make_shared<CGCube>(20, 50, 20); // 左上臂尺寸
+	auto leftUpperArmHints = std::make_shared<TessellationHints>();
+	leftUpperArmCube->setTessellationHints(leftUpperArmHints);
+	leftUpperArmCube->setDisplayListEnabled(true);
+	auto leftUpperArmColor = std::make_shared<CGColor>(); //颜色属性
+	leftUpperArmColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
+	leftUpperArmCube->gocRenderStateSet()->setRenderState(leftUpperArmColor, -1); //设置节点属性
+
+	auto leftUpperArmTrans = std::make_shared<CGTransform>();
+	leftUpperArmTrans->translate(-50, 40, 0); // 躯干左上
+	auto leftUpperArmGeode = std::make_shared<CGGeode>();
+
+	leftUpperArmGeode->AddChild(leftUpperArmCube);
+	leftUpperArmTrans->AddChild(leftUpperArmGeode);
+
+	// 4. 创建左下臂
+	auto leftLowerArmCube = std::make_shared<CGCube>(18, 40, 18); // 右下臂尺寸
+	auto leftLowerArmHints = std::make_shared<TessellationHints>();
+	leftLowerArmCube->setTessellationHints(leftLowerArmHints);
+    leftLowerArmCube->setDisplayListEnabled(true);
+	auto leftLowerArmColor = std::make_shared<CGColor>(); //颜色属性
+	leftLowerArmColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
+	leftLowerArmCube->gocRenderStateSet()->setRenderState(leftLowerArmColor, -1); //设置节点属性
+
+	auto leftLowerArmTrans = std::make_shared<CGTransform>();
+	leftLowerArmTrans->translate(0, -40, 0); // 上臂底部
+	auto leftLowerArmGeode = std::make_shared<CGGeode>();
+	leftLowerArmGeode->AddChild(leftLowerArmCube);
+	leftLowerArmTrans->AddChild(leftLowerArmGeode);
+	leftUpperArmTrans->AddChild(leftLowerArmTrans);
+
+	// 5. 创建左手掌
+	auto leftHandCube = std::make_shared<CGCube>(16, 16, 16); // 手掌尺寸
+	auto leftHandHints = std::make_shared<TessellationHints>();
+	leftHandCube->setTessellationHints(leftHandHints);
+	leftHandCube->setDisplayListEnabled(true);
+	auto leftHandColor = std::make_shared<CGColor>(); //颜色属性
+	leftHandColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
+	leftHandCube->gocRenderStateSet()->setRenderState(leftHandColor, -1); //设置节点属性
+
+	auto leftHandTrans = std::make_shared<CGTransform>();
+	leftHandTrans->translate(0, -30, 0); // 下臂底部
+	auto leftHandGeode = std::make_shared<CGGeode>();
+	leftHandGeode->AddChild(leftHandCube);
+	leftHandTrans->AddChild(leftHandGeode);
+	leftLowerArmTrans->AddChild(leftHandTrans);
+
+	 //6. 创手指（示例：2根）
+	for (int i = 0; i < 2; ++i) {
+		auto fingerCube = std::make_shared<CGCube>(4, 12, 4);// 手指尺寸
+		auto fingerHints = std::make_shared<TessellationHints>();
+		fingerCube->setTessellationHints(fingerHints);
+		fingerCube->setDisplayListEnabled(true);
+		auto fingerColor = std::make_shared<CGColor>(); //颜色属性
+		fingerColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
+		fingerCube->gocRenderStateSet()->setRenderState(fingerColor, -1); //设置节点属性
+
+		auto fingerTrans = std::make_shared<CGTransform>();
+		fingerTrans->translate(-6 + i * 12, -12, 0); // 手掌底部
+		auto fingerGeode = std::make_shared<CGGeode>();
+		fingerGeode->AddChild(fingerCube);
+		fingerTrans->AddChild(fingerGeode);
+		leftHandTrans->AddChild(fingerTrans);
+	}
+
+	//创建两条腿
+	for (int i = 0; i < 2; ++i) {
+		auto legCube = std::make_shared<CGCube>(15, 70, 15);// 腿尺寸
+		auto legHints = std::make_shared<TessellationHints>();
+		legCube->setTessellationHints(legHints);
+		legCube->setDisplayListEnabled(true);
+		auto legColor = std::make_shared<CGColor>(); //颜色属性
+		legColor->setValue(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		legCube->gocRenderStateSet()->setRenderState(legColor, -1); //设置节点属性
+
+		auto legTrans = std::make_shared<CGTransform>();
+		legTrans->translate(-15 + i * 30, -85, 0); // 手掌底部
+		auto legGeode = std::make_shared<CGGeode>();
+		legGeode->AddChild(legCube);
+		legTrans->AddChild(legGeode);
+		torsoTrans->AddChild(legTrans);//组装到躯干
+	}
+
+	// 7. 组装右臂到躯干
+	torsoTrans->AddChild(rightUpperArmTrans);
+	// 8. 组装左臂到躯干
+	torsoTrans->AddChild(leftUpperArmTrans);
+	// 9. 加入场景
+	mScene->GetSceneData()->asGroup()->AddChild(torsoTrans);
+
+	//以上语句按参考资料4中文档类构造函数，添加两个立方体节点实例到场景。
+	//更新回调测试
+	std::shared_ptr<RobotBodyTransformParam> data1 = std::make_shared<RobotBodyTransformParam>();
+	std::shared_ptr<RobotBodyRotate> rc1 = std::make_shared<RobotBodyRotate>();
+	torsoTrans->setUserData(data1); //设置节点更新参数
+	torsoTrans->SetUpdateCallback(rc1); //设置节点更新回调
 }
 
 CCG2022112465杨奎Doc::~CCG2022112465杨奎Doc()
