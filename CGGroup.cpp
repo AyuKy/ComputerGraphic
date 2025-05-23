@@ -108,8 +108,9 @@ void CGGroup::update()//CGGroup 实现帧更新函数
 		mUpdateCallback->run(this, userData());
 	for (auto itr = mChildren.begin(); itr != mChildren.end(); ++itr)
 	{
-		if ((*itr)->GetUpdateCallback()) {
+		(*itr)->update();
+		/*if ((*itr)->GetUpdateCallback()) {
 			(*itr)->GetUpdateCallback()->run((*itr).get(), (*itr)->userData());
-		}
+		}*/
 	}
 }

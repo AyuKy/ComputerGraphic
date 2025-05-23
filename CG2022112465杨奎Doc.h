@@ -93,4 +93,5 @@ public:
 	afx_msg void OnDraw3dSphereface();
 	afx_msg void OnBtnTimer();
 	afx_msg void OnUpdateBtnTimer(CCmdUI* pCmdUI);
+	afx_msg void OnDrawrobot();
 };

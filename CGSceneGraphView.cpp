@@ -22,6 +22,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+#include <functional>
 
 
 // CCGSceneGraphView
@@ -94,7 +95,43 @@ void CCGSceneGraphView::OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* 
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-	GetTreeCtrl().SetRedraw(TRUE);
+	CTreeCtrl& tree = GetTreeCtrl();
+	// === 1. 保存当前选中的节点数据指针（或者唯一标识） ===
+	HTREEITEM hOldSel = tree.GetSelectedItem();
+	DWORD_PTR selectedData = hOldSel ? tree.GetItemData(hOldSel) : 0;
+
+	// === 2. 清空并重新构建树 ===
+	tree.DeleteAllItems();
+	pDoc->InstToSceneTree(&tree);
+
+	// === 3. 尝试恢复原来的选中项 ===
+	if (selectedData)
+	{
+		HTREEITEM hItem = tree.GetRootItem();
+		std::function<HTREEITEM(HTREEITEM)> findItem;
+		findItem = [&](HTREEITEM hCur) -> HTREEITEM {
+			if (!hCur) return nullptr;
+			if (tree.GetItemData(hCur) == selectedData)
+				return hCur;
+			HTREEITEM hChild = tree.GetChildItem(hCur);
+			while (hChild)
+			{
+				HTREEITEM found = findItem(hChild);
+				if (found) return found;
+				hChild = tree.GetNextSiblingItem(hChild);
+			}
+			return nullptr;
+			};
+
+		HTREEITEM hNewSel = findItem(hItem);
+		if (hNewSel)
+		{
+			tree.SelectItem(hNewSel);
+		}
+	}
+
+	tree.SetRedraw(TRUE);
+	//GetTreeCtrl().SetRedraw(TRUE);
 }
 
 int CCGSceneGraphView::OnCreate(LPCREATESTRUCT lpCreateStruct)

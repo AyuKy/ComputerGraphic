@@ -70,9 +70,35 @@ BEGIN_MESSAGE_MAP(CCG2022112465杨奎Doc, CDocument)
 	ON_COMMAND(ID_Draw3D_Sphereface, &CCG2022112465杨奎Doc::OnDraw3dSphereface)
 	ON_COMMAND(ID_Timer, &CCG2022112465杨奎Doc::OnBtnTimer)
 	ON_UPDATE_COMMAND_UI(ID_Timer, &CCG2022112465杨奎Doc::OnUpdateBtnTimer)
+	ON_COMMAND(ID_DrawRobot, &CCG2022112465杨奎Doc::OnDrawrobot)
 END_MESSAGE_MAP()
 
+std::shared_ptr<CGTransform> createBoxPart(float len, float width, float height, const glm::vec4& color, const  CString name)
+{
+	using namespace std;
+	auto cube = make_shared<CGCube>(len, width, height);
+	auto hints = make_shared<TessellationHints>();
+	cube->setTessellationHints(hints);
+	cube->setDisplayListEnabled(true);
 
+	auto geode = make_shared<CGGeode>();
+	geode->AddChild(cube);
+	geode->setName(name);
+
+	// 设置颜色
+	auto colorState = make_shared<CGColor>();
+	colorState->setValue(color);
+	geode->gocRenderStateSet()->setRenderState(colorState, -1);
+
+	//设置线框模式
+	auto mode = make_shared<CGPolygonMode>(PM_LINE, PM_LINE);
+	geode->gocRenderStateSet()->setRenderState(mode, -1);
+
+	auto tran = make_shared<CGTransform>();
+	tran->AddChild(geode);
+	tran->setName(name);
+	return tran;
+}
 // CCG2022112465杨奎Doc 构造/析构
 
 CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
@@ -128,218 +154,6 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	//e2->AddChild(c2);
 	//t2->AddChild(e2);
 	//mScene->GetSceneData()->asGroup()->AddChild(t2);
-
-
-
-
-	// 1. 创建躯干
-	auto torsoCube = std::make_shared<CGCube>(60, 100, 30); // 躯干尺寸
-	auto torsoHints = std::make_shared<TessellationHints>();
-	torsoCube->setTessellationHints(torsoHints);
-	torsoCube->setDisplayListEnabled(true);
-
-	auto torsoTrans = std::make_shared<CGTransform>();//实例躯干组节点
-	torsoTrans->setName("torso");
-	auto torsoGeode = std::make_shared<CGGeode>();//实例躯干叶节点
-	torsoGeode->setName("torso");
-	auto torsoColor = std::make_shared<CGColor>(); //躯干颜色属性
-	torsoColor->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
-	torsoCube->gocRenderStateSet()->setRenderState(torsoColor, -1); //设置节点属性
-	//auto torsoP = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	//torsoGeode->gocRenderStateSet()->setRenderState(torsoP, -1); //设置节点属性
-	//torsoTrans->rotate(15, 1, 0, 0);
-	torsoGeode->AddChild(torsoCube);
-	torsoTrans->AddChild(torsoGeode);
-
-	// 2. 创建头部
-	auto headCube = std::make_shared<CGCube>(40, 40, 40); // 头部尺寸
-	auto headHints = std::make_shared<TessellationHints>();
-	headCube->setTessellationHints(headHints);
-	headCube->setDisplayListEnabled(true);
-	auto headColor = std::make_shared<CGColor>(); //颜色属性
-	headColor->setValue(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); //红色
-	headCube->gocRenderStateSet()->setRenderState(headColor, -1); //设置节点属性
-
-	auto headTrans = std::make_shared<CGTransform>();//实例头部组节点
-	headTrans->translate(0, 80, 0); // 相对躯干顶部
-	auto headGeode = std::make_shared<CGGeode>();//实例头部叶节点
-
-	headGeode->AddChild(headCube);
-	headTrans->AddChild(headGeode);
-	torsoTrans->AddChild(headTrans);
-
-	// 3. 创建右上臂
-	auto rightUpperArmCube = std::make_shared<CGCube>(20, 50, 20); // 右上臂尺寸
-	auto rightUpperArmHints = std::make_shared<TessellationHints>();
-	rightUpperArmCube->setTessellationHints(rightUpperArmHints);
-	rightUpperArmCube->setDisplayListEnabled(true);
-	auto rightUpperArmColor = std::make_shared<CGColor>(); //颜色属性
-	rightUpperArmColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
-	rightUpperArmCube->gocRenderStateSet()->setRenderState(rightUpperArmColor, -1); //设置节点属性
-
-	auto rightUpperArmTrans = std::make_shared<CGTransform>();
-	rightUpperArmTrans->translate(50, 40, 0); // 躯干右上
-	auto rightUpperArmGeode = std::make_shared<CGGeode>();
-
-	rightUpperArmGeode->AddChild(rightUpperArmCube);
-	rightUpperArmTrans->AddChild(rightUpperArmGeode);
-
-	// 4. 创建右下臂
-	auto rightLowerArmCube = std::make_shared<CGCube>(18, 40, 18); // 右下臂尺寸
-	auto rightLowerArmHints = std::make_shared<TessellationHints>();
-	rightLowerArmCube->setTessellationHints(rightLowerArmHints);
-	rightLowerArmCube->setDisplayListEnabled(true);
-	auto rightLowerArmColor = std::make_shared<CGColor>(); //颜色属性
-	rightLowerArmColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
-	rightLowerArmCube->gocRenderStateSet()->setRenderState(rightLowerArmColor, -1); //设置节点属性
-
-	auto rightLowerArmTrans = std::make_shared<CGTransform>();
-	rightLowerArmTrans->translate(0, -40, 0); // 上臂底部
-	auto rightLowerArmGeode = std::make_shared<CGGeode>();
-
-	rightLowerArmGeode->AddChild(rightLowerArmCube);
-	rightLowerArmTrans->AddChild(rightLowerArmGeode);
-	rightUpperArmTrans->AddChild(rightLowerArmTrans);
-
-	// 5. 创建右手掌
-	auto rightHandCube = std::make_shared<CGCube>(16, 16, 16); // 手掌尺寸
-	auto rightHandHints = std::make_shared<TessellationHints>();
-	rightHandCube->setTessellationHints(rightHandHints);
-	rightHandCube->setDisplayListEnabled(true);
-	auto rightHandColor = std::make_shared<CGColor>(); //颜色属性
-	rightHandColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
-	rightHandCube->gocRenderStateSet()->setRenderState(rightHandColor, -1); //设置节点属性
-
-	auto rightHandTrans = std::make_shared<CGTransform>();
-	rightHandTrans->translate(0, -30, 0); // 下臂底部
-	auto rightHandGeode = std::make_shared<CGGeode>();
-
-	rightHandGeode->AddChild(rightHandCube);
-	rightHandTrans->AddChild(rightHandGeode);
-	rightLowerArmTrans->AddChild(rightHandTrans);
-
-	// 6. 创建右手指（示例：2根）
-	auto fingerCube = std::make_shared<CGCube>(4, 12, 4);// 手指尺寸
-	auto fingerHints = std::make_shared<TessellationHints>();
-	fingerCube->setTessellationHints(fingerHints);
-	fingerCube->setDisplayListEnabled(true);
-	auto fingerColor = std::make_shared<CGColor>(); //颜色属性
-	fingerColor->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //红色
-	fingerCube->gocRenderStateSet()->setRenderState(fingerColor, -1); //设置节点属性
-
-	auto fingerTrans1 = std::make_shared<CGTransform>();
-	fingerTrans1->translate(-6, -12, 0); // 手掌底部
-	auto fingerGeode1 = std::make_shared<CGGeode>();
-
-	auto fingerTrans2 = std::make_shared<CGTransform>();
-	fingerTrans2->translate(6, -12, 0); // 手掌底部
-	auto fingerGeode2 = std::make_shared<CGGeode>();
-
-	fingerGeode1->AddChild(fingerCube);
-	fingerTrans1->AddChild(fingerGeode1);
-	rightHandTrans->AddChild(fingerTrans1);
-	fingerGeode2->AddChild(fingerCube);
-	fingerTrans2->AddChild(fingerGeode2);
-	rightHandTrans->AddChild(fingerTrans2);
-
-
-	// 7. 创建左上臂
-	auto leftUpperArmCube = std::make_shared<CGCube>(20, 50, 20); // 左上臂尺寸
-	auto leftUpperArmHints = std::make_shared<TessellationHints>();
-	leftUpperArmCube->setTessellationHints(leftUpperArmHints);
-	leftUpperArmCube->setDisplayListEnabled(true);
-	auto leftUpperArmColor = std::make_shared<CGColor>(); //颜色属性
-	leftUpperArmColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
-	leftUpperArmCube->gocRenderStateSet()->setRenderState(leftUpperArmColor, -1); //设置节点属性
-
-	auto leftUpperArmTrans = std::make_shared<CGTransform>();
-	leftUpperArmTrans->translate(-50, 40, 0); // 躯干左上
-	auto leftUpperArmGeode = std::make_shared<CGGeode>();
-
-	leftUpperArmGeode->AddChild(leftUpperArmCube);
-	leftUpperArmTrans->AddChild(leftUpperArmGeode);
-
-	// 4. 创建左下臂
-	auto leftLowerArmCube = std::make_shared<CGCube>(18, 40, 18); // 右下臂尺寸
-	auto leftLowerArmHints = std::make_shared<TessellationHints>();
-	leftLowerArmCube->setTessellationHints(leftLowerArmHints);
-    leftLowerArmCube->setDisplayListEnabled(true);
-	auto leftLowerArmColor = std::make_shared<CGColor>(); //颜色属性
-	leftLowerArmColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
-	leftLowerArmCube->gocRenderStateSet()->setRenderState(leftLowerArmColor, -1); //设置节点属性
-
-	auto leftLowerArmTrans = std::make_shared<CGTransform>();
-	leftLowerArmTrans->translate(0, -40, 0); // 上臂底部
-	auto leftLowerArmGeode = std::make_shared<CGGeode>();
-	leftLowerArmGeode->AddChild(leftLowerArmCube);
-	leftLowerArmTrans->AddChild(leftLowerArmGeode);
-	leftUpperArmTrans->AddChild(leftLowerArmTrans);
-
-	// 5. 创建左手掌
-	auto leftHandCube = std::make_shared<CGCube>(16, 16, 16); // 手掌尺寸
-	auto leftHandHints = std::make_shared<TessellationHints>();
-	leftHandCube->setTessellationHints(leftHandHints);
-	leftHandCube->setDisplayListEnabled(true);
-	auto leftHandColor = std::make_shared<CGColor>(); //颜色属性
-	leftHandColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
-	leftHandCube->gocRenderStateSet()->setRenderState(leftHandColor, -1); //设置节点属性
-
-	auto leftHandTrans = std::make_shared<CGTransform>();
-	leftHandTrans->translate(0, -30, 0); // 下臂底部
-	auto leftHandGeode = std::make_shared<CGGeode>();
-	leftHandGeode->AddChild(leftHandCube);
-	leftHandTrans->AddChild(leftHandGeode);
-	leftLowerArmTrans->AddChild(leftHandTrans);
-
-	 //6. 创手指（示例：2根）
-	for (int i = 0; i < 2; ++i) {
-		auto fingerCube = std::make_shared<CGCube>(4, 12, 4);// 手指尺寸
-		auto fingerHints = std::make_shared<TessellationHints>();
-		fingerCube->setTessellationHints(fingerHints);
-		fingerCube->setDisplayListEnabled(true);
-		auto fingerColor = std::make_shared<CGColor>(); //颜色属性
-		fingerColor->setValue(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); //红色
-		fingerCube->gocRenderStateSet()->setRenderState(fingerColor, -1); //设置节点属性
-
-		auto fingerTrans = std::make_shared<CGTransform>();
-		fingerTrans->translate(-6 + i * 12, -12, 0); // 手掌底部
-		auto fingerGeode = std::make_shared<CGGeode>();
-		fingerGeode->AddChild(fingerCube);
-		fingerTrans->AddChild(fingerGeode);
-		leftHandTrans->AddChild(fingerTrans);
-	}
-
-	//创建两条腿
-	for (int i = 0; i < 2; ++i) {
-		auto legCube = std::make_shared<CGCube>(15, 70, 15);// 腿尺寸
-		auto legHints = std::make_shared<TessellationHints>();
-		legCube->setTessellationHints(legHints);
-		legCube->setDisplayListEnabled(true);
-		auto legColor = std::make_shared<CGColor>(); //颜色属性
-		legColor->setValue(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		legCube->gocRenderStateSet()->setRenderState(legColor, -1); //设置节点属性
-
-		auto legTrans = std::make_shared<CGTransform>();
-		legTrans->translate(-15 + i * 30, -85, 0); // 手掌底部
-		auto legGeode = std::make_shared<CGGeode>();
-		legGeode->AddChild(legCube);
-		legTrans->AddChild(legGeode);
-		torsoTrans->AddChild(legTrans);//组装到躯干
-	}
-
-	// 7. 组装右臂到躯干
-	torsoTrans->AddChild(rightUpperArmTrans);
-	// 8. 组装左臂到躯干
-	torsoTrans->AddChild(leftUpperArmTrans);
-	// 9. 加入场景
-	mScene->GetSceneData()->asGroup()->AddChild(torsoTrans);
-
-	//以上语句按参考资料4中文档类构造函数，添加两个立方体节点实例到场景。
-	//更新回调测试
-	std::shared_ptr<RobotBodyTransformParam> data1 = std::make_shared<RobotBodyTransformParam>();
-	std::shared_ptr<RobotBodyRotate> rc1 = std::make_shared<RobotBodyRotate>();
-	torsoTrans->setUserData(data1); //设置节点更新参数
-	torsoTrans->SetUpdateCallback(rc1); //设置节点更新回调
 }
 
 CCG2022112465杨奎Doc::~CCG2022112465杨奎Doc()
@@ -598,17 +412,29 @@ void CCG2022112465杨奎Doc::InstToSceneTree(CTreeCtrl* pTree, HTREEITEM hParent
 	tvinsert.item.cChildren = 0;
 	tvinsert.item.lParam = LPARAM(&node);//
 	if (node->asGeode()) {
-		CString str(_T("Geode"));
-		tvinsert.item.pszText = str.GetBuffer();
-		str.ReleaseBuffer();
+		if (node->Name()) {
+			tvinsert.item.pszText = node->Name().GetBuffer();
+			node->Name().ReleaseBuffer();
+		}
+		else {
+			CString str(_T("Geode"));
+			tvinsert.item.pszText = str.GetBuffer();
+			str.ReleaseBuffer();
+		}
 		hTree = pTree->InsertItem(&tvinsert);
 		pTree->SetItemData(hTree, DWORD_PTR(node));
 		//叶子实例节点不再显示模型节点
 	}
 	else if (node->asTransform()) {
-		CString str(_T("Trans"));
-		tvinsert.item.pszText = str.GetBuffer();
-		str.ReleaseBuffer();
+		if (node->Name()){
+			tvinsert.item.pszText = node->Name().GetBuffer();
+			node->Name().ReleaseBuffer();
+		}
+		else {
+			CString str(_T("Trans"));
+			tvinsert.item.pszText = str.GetBuffer();
+			str.ReleaseBuffer();
+		}
 		hTree = pTree->InsertItem(&tvinsert);
 		pTree->SetItemData(hTree, DWORD_PTR(node));
 		unsigned int childs = node->asTransform()->GetNumChildren();
@@ -617,9 +443,15 @@ void CCG2022112465杨奎Doc::InstToSceneTree(CTreeCtrl* pTree, HTREEITEM hParent
 		}
 	}
 	else if (node->asGroup()) {
-		CString str(_T("Group"));
-		tvinsert.item.pszText = str.GetBuffer();
-		str.ReleaseBuffer();
+		if (node->Name()){
+			tvinsert.item.pszText = node->Name().GetBuffer();
+			node->Name().ReleaseBuffer();
+		}
+		else {
+			CString str(_T("Group"));
+			tvinsert.item.pszText = str.GetBuffer();
+			str.ReleaseBuffer();
+		}
 		hTree = pTree->InsertItem(&tvinsert);
 		pTree->SetItemData(hTree, DWORD_PTR(node));
 		unsigned int childs = node->asGroup()->GetNumChildren();
@@ -1180,4 +1012,151 @@ void CCG2022112465杨奎Doc::OnUpdateBtnTimer(CCmdUI* pCmdUI)
 {
 	// TODO: 在此添加命令更新用户界面处理程序代码
 	pCmdUI->SetCheck(mTimer != 0);
+}
+void CCG2022112465杨奎Doc::OnDrawrobot()
+{
+	// TODO: 在此添加命令处理程序代码
+	//创建根节点机器人
+	auto Robot = std::make_shared<CGTransform>();
+	Robot->setName("Robot");
+	//创建躯干
+	auto Trunk = std::make_shared<CGTransform>();
+	Trunk->setName("Trunk");
+	auto trunk1 = createBoxPart(80, 40, 50, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "Trunk1");
+	trunk1->translate(0, 35, 0);
+	auto trunk2 = createBoxPart(60, 25, 40, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "Trunk2");
+	trunk2->translate(0, 0, 0);
+	auto trunk3 = createBoxPart(30, 10, 30, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "Trunk3");
+	trunk3->translate(0, -18, 0);
+	auto trunk4 = createBoxPart(40, 20, 35, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), "Trunk4");
+	trunk4->translate(0, -30, 0);
+	Trunk->AddChild(trunk1);
+	Trunk->AddChild(trunk2);
+	Trunk->AddChild(trunk3);
+	Trunk->AddChild(trunk4);
+	Robot->AddChild(Trunk);
+
+	//创建头部
+	auto Head = createBoxPart(40, 40, 40, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), "Head");
+	Head->translate(0, 70, 0);
+	Head->rotate(20,0,1,0);
+	Head->rotate(15,1,0,0);
+	Robot->AddChild(Head);
+
+	//创建右上臂
+	auto RighUpperArm = createBoxPart(20, 50, 20, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "RighUpperArm");
+	RighUpperArm->translate(50, 40, 0);
+	RighUpperArm->rotate(-45, 0, 0, -1);
+
+	//创建右下臂
+	auto RightLowerArm = createBoxPart(18, 40, 18, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "RightLowerArm");
+	RightLowerArm->translate(0, -30, 10);
+	RightLowerArm->rotate(-60, 1, 0, 0); // 旋转下臂
+	RighUpperArm->AddChild(RightLowerArm);
+
+	//创建右手掌
+	auto RightHand = createBoxPart(16, 16, 16, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "RightHand");
+	RightHand->translate(0, -30, 0);
+	RightLowerArm->AddChild(RightHand);
+
+	//创建右手指（示例：2根）
+	auto finger1 = createBoxPart(4, 12, 4, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "finger");
+	finger1->translate(-6, -12, 0);
+	RightHand->AddChild(finger1);
+	auto finger2 = createBoxPart(4, 12, 4, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "finger");
+	finger2->translate(6, -12, 0);
+	RightHand->AddChild(finger2);
+	//右臂组装到机器人
+	Robot->AddChild(RighUpperArm);
+
+	//创建左上臂
+	auto LeftUpperArm = createBoxPart(20, 50, 20, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "RighUpperArm");
+	LeftUpperArm->translate(-50, 40, 0);
+	LeftUpperArm->rotate(-60, 0, 0, 1);
+	LeftUpperArm->rotate(-30, 1, 0, 0);
+
+	//创建左下臂
+	auto LeftLowerArm = createBoxPart(18, 40, 18, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "RightLowerArm");
+	LeftLowerArm->translate(0, -30, 15);
+	LeftLowerArm->rotate(-90, 1, 0, 0); // 旋转下臂
+	LeftUpperArm->AddChild(LeftLowerArm);
+
+	//创建左手掌
+	auto LeftHand = createBoxPart(16, 16, 16, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "RightHand");
+	LeftHand->translate(0, -30, 0);
+	LeftLowerArm->AddChild(LeftHand);
+
+	//创建左手指（示例：2根）
+	auto finger3 = createBoxPart(4, 12, 4, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "finger");
+	finger3->translate(-6, -12, 0);
+	LeftHand->AddChild(finger3);
+	auto finger4 = createBoxPart(4, 12, 4, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "finger");
+	finger4->translate(6, -12, 0);
+	LeftHand->AddChild(finger4);
+	//左臂组装到机器人
+	Robot->AddChild(LeftUpperArm);
+
+	//创建两条腿
+	auto Leg = std::make_shared<CGTransform>();
+	Leg->setName("Leg");
+	//左大腿
+	auto leftUpperLeg = createBoxPart(20, 50, 20, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "leftUpperLeg");
+	leftUpperLeg->translate(-25, -55, 10);
+	leftUpperLeg->rotate(45, -1, -1, -1);
+	//左小腿
+	auto leftLowerLeg = createBoxPart(22, 55, 22, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "leftLowerLeg");
+	leftLowerLeg->translate(0, -50, -15);
+	leftLowerLeg->rotate(30, 1, 0, 0);
+	leftUpperLeg->AddChild(leftLowerLeg);
+	Leg->AddChild(leftUpperLeg);
+	//右大腿
+	auto rightUpperLeg = createBoxPart(20, 50, 20, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "rightUpperLeg");
+	rightUpperLeg->translate(25, -55, 10);
+	rightUpperLeg->rotate(45, -1, 1, 1);
+	//右小腿
+	auto rightLowerLeg = createBoxPart(22, 55, 22, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), "rightLowerLeg");
+	rightLowerLeg->translate(0, -50, -10);
+	rightLowerLeg->rotate(20, 1, 0, 0);
+	rightUpperLeg->AddChild(rightLowerLeg);
+	Leg->AddChild(rightUpperLeg);
+
+	Robot->AddChild(Leg);
+	//加入场景
+	mScene->GetSceneData()->asGroup()->AddChild(Robot);
+	UpdateAllViews(NULL);
+
+//更新回调测试
+	//机器人旋转
+	std::shared_ptr<RobotBodyTransformParam> data1 = std::make_shared<RobotBodyTransformParam>();
+	std::shared_ptr<RobotBodyRotate> rc1 = std::make_shared<RobotBodyRotate>();
+	Robot->setUserData(data1); //设置节点更新参数
+	Robot->SetUpdateCallback(rc1); //设置节点更新回调
+	//机器人腿部运动
+	std::shared_ptr<RotateParam> data2 = std::make_shared<RotateParam>();
+	data2->setAxis(glm::vec3(1.0f, 0.0f, 0.0f));
+	std::shared_ptr<RotateCallback> rc2 = std::make_shared<RotateCallback>();
+	rightUpperLeg->setUserData(data2); //设置节点更新参数
+	rightUpperLeg->SetUpdateCallback(rc2); //设置节点更新回调
+
+	std::shared_ptr<RotateParam> data3 = std::make_shared<RotateParam>();
+	data3->setAxis(glm::vec3(1.0f, 0.0f, 0.0f));
+	data3->setAngle(0.0f);
+	data3->setMaxAngle(60.0f);
+	std::shared_ptr<RotateCallback> rc3 = std::make_shared<RotateCallback>();
+	leftUpperLeg->setUserData(data3); //设置节点更新参数
+	leftUpperLeg->SetUpdateCallback(rc3); //设置节点更新回调
+	//机器人手臂运动
+	std::shared_ptr<RotateParam> data4 = std::make_shared<RotateParam>();
+	data4->setAxis(glm::vec3(1.0f, 1.0f, 0.0f));
+	data4->setStep(6.0f);
+	std::shared_ptr<RotateCallback> rc4 = std::make_shared<RotateCallback>();
+	LeftUpperArm->setUserData(data4); //设置节点更新参数
+	LeftUpperArm->SetUpdateCallback(rc4); //设置节点更新回调
+
+	std::shared_ptr<RotateParam> data5 = std::make_shared<RotateParam>();
+	data5->setAxis(glm::vec3(-1.0f, 0.0f, 0.0f));
+	data5->setStep(6.0f);
+	std::shared_ptr<RotateCallback> rc5 = std::make_shared<RotateCallback>();
+	RighUpperArm->setUserData(data5); //设置节点更新参数
+	RighUpperArm->SetUpdateCallback(rc5); //设置节点更新回调
 }
