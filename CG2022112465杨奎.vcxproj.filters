@@ -111,10 +111,7 @@
     <ClInclude Include="CInputDialog1.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RobotBodyTransformParam.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="RobotBodyRotate.h">
+    <ClInclude Include="RobotBodyTransform.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -195,9 +192,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CInputDialog1.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="RobotBodyRotate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

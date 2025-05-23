@@ -21,11 +21,12 @@ public:
 	//序列化（如果需要序列化/反序列化支持派生类应使用DECLARE_SERIAL/IMPLEMENT_SERIA并重写该虚函数）
 	virtual void Serialize(CArchive& ar) override;
 	const CString& Name() const { return mName; }
+	void setName(CString name) { this->mName = name; }
 	CString& Name() { return mName; }
 protected:
 	CString mName; //对象名称，默认由“类名+序号”构成，用于显示
 	static unsigned long sID; //对象ID，仅用于辅助对象命名，不能唯一标识
-
+//实验5
 public:
 	const CGObject* userData() const { return mUserData.get(); }
 	CGObject* userData() { return mUserData.get(); }

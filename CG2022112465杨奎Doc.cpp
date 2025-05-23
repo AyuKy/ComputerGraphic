@@ -44,8 +44,7 @@
 #include "CGCube.h"
 #include "CGSphere.h"
 #include "CInputDialog1.h"
-#include "RobotBodyTransformParam.h"
-#include "RobotBodyRotate.h"
+#include "RobotBodyTransform.h"
 
 // CCG2022112465杨奎Doc
 
@@ -140,7 +139,9 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	torsoCube->setDisplayListEnabled(true);
 
 	auto torsoTrans = std::make_shared<CGTransform>();//实例躯干组节点
+	torsoTrans->setName("torso");
 	auto torsoGeode = std::make_shared<CGGeode>();//实例躯干叶节点
+	torsoGeode->setName("torso");
 	auto torsoColor = std::make_shared<CGColor>(); //躯干颜色属性
 	torsoColor->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
 	torsoCube->gocRenderStateSet()->setRenderState(torsoColor, -1); //设置节点属性

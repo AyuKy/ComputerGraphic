@@ -1,6 +1,14 @@
 #pragma once
-#include "CGCamera.h"
-#include "RobotBodyTransformParam.h"
+//节点变换自定义参数，可以根据更新需要定义参数
+class RobotBodyTransformParam : public CGObject
+{
+public:
+	void setRotateDegree(float degree) { mRotateDegree = degree; }
+	float rotateDegree() const { return mRotateDegree; }
+protected:
+	float mRotateDegree = 1.0f;
+};
+
 //旋转更新回调示例
 class RobotBodyRotate : public CGCallback
 {
@@ -19,11 +27,10 @@ public:
 				body->rotate(d->rotateDegree(), 0.0f, 1.0f, 0.0f);
 			}
 			else { //如果没传入自定参数，按默认参数进行
-				body->rotate(1.0f, 0.0f, 1.0f, 0.0f);
+				body->rotate(1.0f, 1.0f, 1.0f, 1.0f);
 			}
 			return true;
 		}
 		return false;
 	}
 };
-
