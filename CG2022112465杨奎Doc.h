@@ -8,13 +8,14 @@
 //
 // 版权所有(C) Microsoft Corporation
 // 保留所有权利。
-
 // CG2022112465杨奎Doc.h: CCG2022112465杨奎Doc 类的接口
 //
 
 
 #pragma once
 #include <memory>
+#include <functional>
+#include "glIncludes.h"
 class CGScene;
 class CGRenderContext;
 class CGNode;
@@ -40,6 +41,9 @@ public:
 	void InstToSceneTree(CTreeCtrl* pTree);//实列节点加入场景树
 	void InstToSceneTree(CTreeCtrl* pTree, HTREEITEM hInst, CGNode* node);
 	void OnSelectSceneTreeItem(CTreeCtrl* pTree, HTREEITEM hItem); //场景树中选中节点
+
+public:
+	void OnViewResize(int cx, int cy);
 // 重写
 public:
 	virtual BOOL OnNewDocument();

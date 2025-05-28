@@ -115,45 +115,45 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	//mScene->SetSceneData(g);
 
 	
-	////球体模型
-	//auto c = std::make_shared<CGSphere>(100);
-	//auto h = std::make_shared<TessellationHints>();
-	//c->setTessellationHints(h);
-	//c->setDisplayListEnabled(true);
-	////右球体实例节点
-	//auto t1 = std::make_shared<CGTransform>(); //实列组节点
-	//auto e1 = std::make_shared<CGGeode>(); //实列叶节点
-	//auto color1 = std::make_shared<CGColor>(); //属性
-	//color1->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //黄色
-	//e1->gocRenderStateSet()->setRenderState(color1, -1); //设置节点属性
-	//auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	//e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
-	//t1->translate(100, 0, 0);
-	//t1->rotate(45, 1, 1, 1);
-	////t1->scale(100, 100, 100);
-	//e1->AddChild(c);
-	//t1->AddChild(e1);
-	//mScene->GetSceneData()->asGroup()->AddChild(t1);
+	//球体模型
+	auto c = std::make_shared<CGSphere>(100);
+	auto h = std::make_shared<TessellationHints>();
+	c->setTessellationHints(h);
+	c->setDisplayListEnabled(true);
+	//右球体实例节点
+	auto t1 = std::make_shared<CGTransform>(); //实列组节点
+	auto e1 = std::make_shared<CGGeode>(); //实列叶节点
+	auto color1 = std::make_shared<CGColor>(); //属性
+	color1->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //黄色
+	e1->gocRenderStateSet()->setRenderState(color1, -1); //设置节点属性
+	auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
+	t1->translate(100, 0, 0);
+	t1->rotate(45, 1, 1, 1);
+	//t1->scale(100, 100, 100);
+	e1->AddChild(c);
+	t1->AddChild(e1);
+	mScene->GetSceneData()->asGroup()->AddChild(t1);
 
-	////长方体模型
-	//auto c2 = std::make_shared<CGCube>();
-	//auto h2 = std::make_shared<TessellationHints>();
-	//c2->setTessellationHints(h2);
-	//c2->setDisplayListEnabled(true);
-	////左长方体节点
-	//auto t2 = std::make_shared<CGTransform>(); //实列组节点
-	//auto e2 = std::make_shared<CGGeode>(); //实列叶节点
-	//auto color2 = std::make_shared<CGColor>(); //属性
-	//color2->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
-	//e2->gocRenderStateSet()->setRenderState(color2, -1); //设置节点属性
-	//auto p2 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	//e2->gocRenderStateSet()->setRenderState(p2, -1); //设置节点属性
-	//t2->translate(-100, 0, 0);
-	//t2->rotate(45, 1, 1, 1);
-	//t2->scale(100, 100, 100);
-	//e2->AddChild(c2);
-	//t2->AddChild(e2);
-	//mScene->GetSceneData()->asGroup()->AddChild(t2);
+	//长方体模型
+	auto c2 = std::make_shared<CGCube>();
+	auto h2 = std::make_shared<TessellationHints>();
+	c2->setTessellationHints(h2);
+	c2->setDisplayListEnabled(true);
+	//左长方体节点
+	auto t2 = std::make_shared<CGTransform>(); //实列组节点
+	auto e2 = std::make_shared<CGGeode>(); //实列叶节点
+	auto color2 = std::make_shared<CGColor>(); //属性
+	color2->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
+	e2->gocRenderStateSet()->setRenderState(color2, -1); //设置节点属性
+	auto p2 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	e2->gocRenderStateSet()->setRenderState(p2, -1); //设置节点属性
+	t2->translate(-100, 0, 0);
+	t2->rotate(45, 1, 1, 1);
+	t2->scale(100, 100, 100);
+	e2->AddChild(c2);
+	t2->AddChild(e2);
+	mScene->GetSceneData()->asGroup()->AddChild(t2);
 }
 
 CCG2022112465杨奎Doc::~CCG2022112465杨奎Doc()
@@ -1159,4 +1159,10 @@ void CCG2022112465杨奎Doc::OnDrawrobot()
 	std::shared_ptr<RotateCallback> rc5 = std::make_shared<RotateCallback>();
 	RighUpperArm->setUserData(data5); //设置节点更新参数
 	RighUpperArm->SetUpdateCallback(rc5); //设置节点更新回调
+}
+
+
+
+void CCG2022112465杨奎Doc::OnViewResize(int cx, int cy){
+	mScene->GetMainCamera()->viewport()->set(0, 0, cx, cy); 
 }

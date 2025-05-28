@@ -41,7 +41,7 @@ bool CGScene::Render(CGRenderContext* pRC, CGCamera* pCamera)
 	//场景节点更新
 	mRoot->update();
 	//相机投影
-	//pCamera->Projection(pCamera->ProjectionMode());
+	pCamera->Projection(pCamera->ProjectionMode());
 	//绘制
 	mRoot->Render(pRC, pCamera);
 	//绘制场景世界坐标系
