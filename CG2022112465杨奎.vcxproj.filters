@@ -114,6 +114,9 @@
     <ClInclude Include="RobotBodyTransform.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CGCameraOp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CG2022112465杨奎.cpp">
@@ -192,6 +195,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CInputDialog1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CGCameraOp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

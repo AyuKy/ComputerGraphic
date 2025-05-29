@@ -108,3 +108,82 @@ void Viewport::activate() const
 		glStencilMask(stencil_write_mask);
 	}
 }
+
+
+
+
+//观察窗口缩放
+void CGCamera::zoom(float scale) {
+	mLeft *= scale;
+	mRight *= scale;
+	mBottom *= scale;
+	mTop *= scale;
+}
+//边界调整
+void CGCamera::adjustLeft(float delta) { mLeft += delta; }
+void CGCamera::adjustRight(float delta) { mRight += delta; }
+void CGCamera::adjustTop(float delta) { mTop += delta; }
+void CGCamera::adjustBottom(float delta) { mBottom += delta; }
+
+//正交投影视图
+//正视图
+void CGCamera::setFrontView() {
+	mEye = glm::vec3(0, 0, 500);
+	mTarget = glm::vec3(0, 0, 0);
+	mUp = glm::vec3(0, 1, 0);
+}
+//后视图
+void CGCamera::setBackView() {
+	mEye = glm::vec3(0, 0, -500);
+	mTarget = glm::vec3(0, 0, 0);
+	mUp = glm::vec3(0, 1, 0);
+}
+//左视图
+void CGCamera::setLeftView() {
+	mEye = glm::vec3(-500, 0, 0);  // X轴负方向
+	mTarget = glm::vec3(0, 0, 0);
+	mUp = glm::vec3(0, 1, 0);    // 保持Y轴为上
+}
+//右视图
+void CGCamera::setRightView() {
+	mEye = glm::vec3(500, 0, 0);  // X轴正方向
+	mTarget = glm::vec3(0, 0, 0);
+	mUp = glm::vec3(0, 1, 0);    // 保持Y轴为上
+}
+//顶视图
+void CGCamera::setTopView() {
+	mEye = glm::vec3(0, 500, 0);  // Y轴正方向
+	mTarget = glm::vec3(0, 0, 0);
+	mUp = glm::vec3(0, 0, -1);   // Z轴负方向为上
+}
+//底视图
+void CGCamera::setBottomView() {
+	mEye = glm::vec3(0, -500, 0);  // Y轴正方向
+	mTarget = glm::vec3(0, 0, 0);
+	mUp = glm::vec3(0, 0, 1);   // Z轴负方向为上
+}
+//距离
+void CGCamera::zoomDistance(float delta) {
+	glm::vec3 dir = glm::normalize(mTarget - mEye);
+	mEye += dir * delta;
+}
+//旋转
+void CGCamera::rotate(float deltaX, float deltaY) {
+	float sensitivity = 1.0f;
+	glm::vec3 dir = mTarget - mEye;
+	float radius = glm::length(dir);
+	dir = glm::normalize(dir);
+
+	// 绕Y轴旋转（水平）
+	float theta = deltaX * sensitivity;
+	glm::mat4 rotY = glm::rotate(glm::mat4(1.0f), theta, glm::vec3(0, 1, 0));
+	dir = glm::vec3(rotY * glm::vec4(dir, 0));
+
+	// 绕X轴旋转（垂直）
+	float phi = deltaY * sensitivity;
+	glm::vec3 right = glm::normalize(glm::cross(dir, mUp));
+	glm::mat4 rotX = glm::rotate(glm::mat4(1.0f), phi, right);
+	dir = glm::vec3(rotX * glm::vec4(dir, 0));
+
+	mEye = mTarget - dir * radius;
+}

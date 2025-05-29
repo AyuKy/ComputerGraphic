@@ -86,6 +86,8 @@ void CCG2022112465杨奎View::OnDraw(CDC* /*pDC*/)
 	RenderScene();//自定义绘制代码调用函数
 }
 
+void CCG2022112465杨奎View::OnFilePrintPreview(){}
+
 void CCG2022112465杨奎View::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	ClientToScreen(&point);
@@ -269,7 +271,8 @@ bool CCG2022112465杨奎View::InitGLFW()
 	glfwSetCursorPosCallback(m_glfwWindow, UIEventHandler::CursorPosCallback);
 	//设置鼠标滚轮回调
 	glfwSetScrollCallback(m_glfwWindow, UIEventHandler::ScrollCallback);
-
+	//设置字符输入回调
+	glfwSetCharCallback(m_glfwWindow, UIEventHandler::CharCallback);
 
 	return true;
 }
@@ -423,3 +426,4 @@ void CCG2022112465杨奎View::OnTimer(UINT_PTR nIDEvent)
 	}
 	__super::OnTimer(nIDEvent);
 }
+

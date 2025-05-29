@@ -18,6 +18,7 @@
 #include "CGRenderContext.h"
 #include <memory>
 class CGNode;
+class CCG2022112465杨奎Doc;
 class CCG2022112465杨奎View : public CView,public CCGRenderContext
 {
 protected: // 仅从序列化创建

@@ -13,9 +13,10 @@
 
 
 #pragma once
+#include "glIncludes.h"
 #include <memory>
 #include <functional>
-#include "glIncludes.h"
+
 class CGScene;
 class CGRenderContext;
 class CGNode;
@@ -98,4 +99,5 @@ public:
 	afx_msg void OnBtnTimer();
 	afx_msg void OnUpdateBtnTimer(CCmdUI* pCmdUI);
 	afx_msg void OnDrawrobot();
+	afx_msg void OnCamera();
 };

@@ -49,6 +49,9 @@ void UIEventHandler::KeyCallback(GLFWwindow* window, int key, int scancode, int 
 void UIEventHandler::CharCallback(GLFWwindow* window, unsigned int codepoint)
 {
 	//未实现
+	if (sCommand) {//命令模式，转发到对应命令对象去处理该事件 
+		sCommand->OnChar(window, codepoint);
+	}
 }
 //组合键输入，字符也可触发，但修饰符不触发。codepoint是按下的键的unicode码，mods是按下的修饰符。
 void UIEventHandler::CharModsCallback(GLFWwindow * window, unsigned int codepoint, int mods)

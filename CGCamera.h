@@ -84,4 +84,24 @@ public:
 	void setViewport(Viewport* viewport) { mViewport = std::shared_ptr<Viewport>(viewport); }
 	Viewport* viewport() { return mViewport.get(); }
 	const Viewport* viewport() const { return mViewport.get(); }
+
+public:
+	//边界调整
+	void zoom(float scale);
+	void adjustLeft(float delta);
+	void adjustRight(float delta);
+	void adjustTop(float delta);
+	void adjustBottom(float delta);
+	//正交投影视图
+	void setFrontView();
+	void setBackView();
+	void setLeftView();
+	void setRightView();
+	void setTopView();
+	void setBottomView();
+	//鼠标
+	void zoomDistance(float delta);
+	void rotate(float deltaX, float deltaY);
+
+	// 类似处理 Bottom, Top
 };

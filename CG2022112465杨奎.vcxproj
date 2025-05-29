@@ -192,6 +192,7 @@
     <ClInclude Include="CG2022112465杨奎View.h" />
     <ClInclude Include="CGBrokenLine.h" />
     <ClInclude Include="CGCamera.h" />
+    <ClInclude Include="CGCameraOp.h" />
     <ClInclude Include="CGCube.h" />
     <ClInclude Include="CGDraw2DLineSeg.h" />
     <ClInclude Include="CGDraw2DBrokenLine.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="CG2022112465杨奎View.cpp" />
     <ClCompile Include="CGBrokenLine.cpp" />
     <ClCompile Include="CGCamera.cpp" />
+    <ClCompile Include="CGCameraOp.cpp" />
     <ClCompile Include="CGCube.cpp" />
     <ClCompile Include="CGDraw2DLineSeg.cpp" />
     <ClCompile Include="CGDraw2DBrokenLine.cpp" />
