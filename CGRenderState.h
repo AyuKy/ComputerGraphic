@@ -258,6 +258,11 @@ public:
     virtual ERenderState type() const { return RS_NONE; }
     //需重写的虚函数,index用于多属性比如多光源
     virtual void apply(const CGCamera* camera, CGRenderContext* ctx, int index = 0) const = 0;
+public:
+    void SetUpdateCallback(std::shared_ptr<CGCallback> uc) { mUpdateCallback = uc; }
+    inline CGCallback* GetUpdateCallback() { return mUpdateCallback.get(); }
+protected:
+    std::shared_ptr<CGCallback> mUpdateCallback = nullptr;
 };
 
 //颜色属性
@@ -323,7 +328,7 @@ protected:
     int mFactor;
     GLushort mPattern;
 };
-
+//多边形
 class CGPolygonMode : public CGRenderState
 {
 public:
@@ -340,6 +345,127 @@ public:
 protected:
     EPolygonMode mFrontFace;
     EPolygonMode mBackFace;
+};
+
+//光源
+class CGLight : public CGRenderState
+{
+public:
+    CGLight()
+        : mPosition(0, 0, 1, 0),//w=1表示点光源，w=0表示光源在无限远处，默认与z轴平行
+        mAmbient(0.2f, 0.2f, 0.2f, 1.0f),//环境光颜色（默认灰色）
+        mDiffuse(0.7f, 0.7f, 0.7f, 1.0f),//漫反射光颜色（较亮的白色漫反射光）
+		mSpecular(1.0f, 1.0f, 1.0f, 1.0f),//镜面反射光颜色（白色镜面反射光）
+        mLightID(GL_LIGHT0) // 默认GL_LIGHT0
+    {
+    }
+    virtual ~CGLight() = default;
+
+    virtual ERenderState type() const override { return RS_Light; }
+    virtual void apply(const CGCamera* camera, CGRenderContext* ctx, int index = 0) const override
+    {
+        GLenum light = mLightID + index;
+        glEnable(light);
+        glLightfv(light, GL_POSITION, &mPosition[0]);
+        glLightfv(light, GL_AMBIENT, &mAmbient[0]);
+        glLightfv(light, GL_DIFFUSE, &mDiffuse[0]);
+        glLightfv(light, GL_SPECULAR, &mSpecular[0]);
+    }
+
+    void setPosition(const glm::vec4& pos) { mPosition = pos; }
+    void setAmbient(const glm::vec4& amb) { mAmbient = amb; }
+    void setDiffuse(const glm::vec4& diff) { mDiffuse = diff; }
+    void setSpecular(const glm::vec4& spec) { mSpecular = spec; }
+    void setLightID(GLenum id) { mLightID = id; }
+
+    const glm::vec4& position() const { return mPosition; }
+    const glm::vec4& ambient() const { return mAmbient; }
+    const glm::vec4& diffuse() const { return mDiffuse; }
+    const glm::vec4& specular() const { return mSpecular; }
+    GLenum lightID() const { return mLightID; }
+
+protected:
+    glm::vec4 mPosition;//光源位置
+	glm::vec4 mAmbient;//环境光
+	glm::vec4 mDiffuse; //漫反射光
+	glm::vec4 mSpecular; //镜面反射光
+    GLenum mLightID; // GL_LIGHT0, GL_LIGHT1, ...
+};
+//光照模型
+class CGLightModel : public CGRenderState
+{
+public:
+    CGLightModel();
+    virtual ~CGLightModel() = default;
+    virtual ERenderState type() const { return RS_LightModel; }
+    virtual void apply(const CGCamera* camera, CGRenderContext* ctx, int index = 0) const;
+    void setLocalViewer(bool localviewer) { mLocalViewer = localviewer; }
+    void setTwoSide(bool twoside) { mTwoSide = twoside; }
+    void setAmbientColor(const glm::vec4& ambientcolor) { mAmbientColor = ambientcolor; }
+    bool localViewer() const { return mLocalViewer; }
+    bool twoSide() const { return mTwoSide; }
+    const glm::vec4& ambientColor() const { return mAmbientColor; }
+protected:
+    glm::vec4 mAmbientColor;//全局环境光
+    bool mLocalViewer; //无限远或局部观察（镜面反射角度的计算）
+    bool mTwoSide; //双面光照
+};
+
+//材质
+class CGMaterial : public CGRenderState
+{
+public:
+    CGMaterial()
+        : mAmbient(0.2f, 0.2f, 0.2f, 1.0f),
+        mDiffuse(0.8f, 0.8f, 0.8f, 1.0f),
+        mSpecular(0.0f, 0.0f, 0.0f, 1.0f),
+        mEmission(0.0f, 0.0f, 0.0f, 1.0f),
+        mShininess(0.0f)
+    {
+    }
+    virtual ~CGMaterial() = default;
+
+    virtual ERenderState type() const override { return RS_Material; }
+    virtual void apply(const CGCamera* camera, CGRenderContext* ctx, int index = 0) const override
+    {
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &mAmbient[0]);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, &mDiffuse[0]);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, &mSpecular[0]);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, &mEmission[0]);
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
+    }
+
+    void setAmbient(const glm::vec4& v) { mAmbient = v; }
+    void setDiffuse(const glm::vec4& v) { mDiffuse = v; }
+    void setSpecular(const glm::vec4& v) { mSpecular = v; }
+    void setEmission(const glm::vec4& v) { mEmission = v; }
+    void setShininess(float s) { mShininess = s; }
+
+    const glm::vec4& ambient() const { return mAmbient; }
+    const glm::vec4& diffuse() const { return mDiffuse; }
+    const glm::vec4& specular() const { return mSpecular; }
+    const glm::vec4& emission() const { return mEmission; }
+    float shininess() const { return mShininess; }
+
+protected:
+    glm::vec4 mAmbient;
+    glm::vec4 mDiffuse;
+    glm::vec4 mSpecular;
+    glm::vec4 mEmission;
+    float mShininess;
+};
+// 着色模式
+class CGShadeModel :public CGRenderState
+{
+public:
+    CGShadeModel(EShadeModel shademodel = SM_SMOOTH);
+    virtual ~CGShadeModel() = default;
+    virtual ERenderState type() const { return RS_ShadeModel; }
+    virtual void apply(const CGCamera* camera, CGRenderContext* ctx, int index = 0) const;
+    void set(EShadeModel shademodel) { mShadeModel = shademodel; }
+    EShadeModel shadeModel() const { return mShadeModel; }
+protected:
+    EShadeModel mShadeModel;
 };
 
 class CGEnableSet : public CGObject

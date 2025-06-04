@@ -46,13 +46,16 @@
 #define ID_Timer                        32803
 #define ID_DrawRobot                    32806
 #define ID_Camera                       32808
+#define ID_LightClose                   32809
+#define ID_LightOpen                    32810
+#define ID_BUTTON2                      32811
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32809
+#define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

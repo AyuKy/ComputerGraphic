@@ -72,36 +72,11 @@ BEGIN_MESSAGE_MAP(CCG2022112465杨奎Doc, CDocument)
 	ON_UPDATE_COMMAND_UI(ID_Timer, &CCG2022112465杨奎Doc::OnUpdateBtnTimer)
 	ON_COMMAND(ID_DrawRobot, &CCG2022112465杨奎Doc::OnDrawrobot)
 	ON_COMMAND(ID_Camera, &CCG2022112465杨奎Doc::OnCamera)
+	ON_COMMAND(ID_LightOpen, &CCG2022112465杨奎Doc::OnLightopen)
+	ON_COMMAND(ID_LightClose, &CCG2022112465杨奎Doc::OnLightclose)
 END_MESSAGE_MAP()
 
-std::shared_ptr<CGTransform> createBoxPart(float len, float width, float height, const glm::vec4& color, const  CString name)
-{
-	using namespace std;
-	auto cube = make_shared<CGCube>(len, width, height);
-	auto hints = make_shared<TessellationHints>();
-	cube->setTessellationHints(hints);
-	cube->setDisplayListEnabled(true);
-
-	auto geode = make_shared<CGGeode>();
-	geode->AddChild(cube);
-	geode->setName(name);
-
-	// 设置颜色
-	auto colorState = make_shared<CGColor>();
-	colorState->setValue(color);
-	geode->gocRenderStateSet()->setRenderState(colorState, -1);
-
-	//设置线框模式
-	auto mode = make_shared<CGPolygonMode>(PM_LINE, PM_LINE);
-	geode->gocRenderStateSet()->setRenderState(mode, -1);
-
-	auto tran = make_shared<CGTransform>();
-	tran->AddChild(geode);
-	tran->setName(name);
-	return tran;
-}
 // CCG2022112465杨奎Doc 构造/析构
-
 CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 {
 	// TODO: 在此添加一次性构造代码
@@ -117,7 +92,7 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 
 	
 	//球体模型
-	auto c = std::make_shared<CGSphere>(100);
+	auto c = std::make_shared<CGCube>(100);
 	auto h = std::make_shared<TessellationHints>();
 	c->setTessellationHints(h);
 	c->setDisplayListEnabled(true);
@@ -127,8 +102,8 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	auto color1 = std::make_shared<CGColor>(); //属性
 	color1->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //黄色
 	e1->gocRenderStateSet()->setRenderState(color1, -1); //设置节点属性
-	auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
+	//auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	//e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
 	t1->translate(100, 0, 0);
 	t1->rotate(45, 1, 1, 1);
 	//t1->scale(100, 100, 100);
@@ -147,8 +122,9 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	auto color2 = std::make_shared<CGColor>(); //属性
 	color2->setValue(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)); //蓝色
 	e2->gocRenderStateSet()->setRenderState(color2, -1); //设置节点属性
-	auto p2 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
+	auto p2 = std::make_shared<CGPolygonMode>(PM_FILL, PM_FILL); //设置填充模式
 	e2->gocRenderStateSet()->setRenderState(p2, -1); //设置节点属性
+
 	t2->translate(-100, 0, 0);
 	t2->rotate(45, 1, 1, 1);
 	t2->scale(100, 100, 100);
@@ -991,6 +967,33 @@ void CCG2022112465杨奎Doc::OnDraw3dSphereface()
 	UpdateAllViews(NULL);
 }
 
+std::shared_ptr<CGTransform> createBoxPart(float len, float width, float height, const glm::vec4& color, const  CString name)
+{
+	using namespace std;
+	auto cube = make_shared<CGCube>(len, width, height);
+	auto hints = make_shared<TessellationHints>();
+	cube->setTessellationHints(hints);
+	cube->setDisplayListEnabled(true);
+
+	auto geode = make_shared<CGGeode>();
+	geode->AddChild(cube);
+	geode->setName(name);
+
+	// 设置颜色
+	auto colorState = make_shared<CGColor>();
+	colorState->setValue(color);
+	geode->gocRenderStateSet()->setRenderState(colorState, -1);
+
+	//设置线框模式
+	auto mode = make_shared<CGPolygonMode>(PM_LINE, PM_LINE);
+	geode->gocRenderStateSet()->setRenderState(mode, -1);
+
+	auto tran = make_shared<CGTransform>();
+	tran->AddChild(geode);
+	tran->setName(name);
+	return tran;
+}
+
 void CCG2022112465杨奎Doc::OnBtnTimer()
 {
 	// TODO: 在此添加命令处理程序代码
@@ -1187,5 +1190,72 @@ void CCG2022112465杨奎Doc::OnCamera()
 		UIEventHandler::DelCommand();
 	}
 	UIEventHandler::SetCommand(new CGCameraOp(view->glfwWindow(), mScene));
+	UpdateAllViews(NULL);
+}
+
+void CCG2022112465杨奎Doc::OnLightopen()
+{
+	//添加光源
+	auto light = std::make_shared<CGLight>();
+	light->setPosition(glm::vec4(0.0f, 0.0f, 500.0f, 1.0f));//点光源，位置（200，200，200）
+	light->setAmbient(glm::vec4(1.0f,1.0f,1.0f,1.0f));//白色环境光
+	light->setDiffuse(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	light->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	//e2->gocRenderStateSet()->setRenderState(light, 0);
+	//添加到场景根节点
+	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(light, 0);
+
+	//添加材质
+	auto material = std::make_shared<CGMaterial>();
+	material->setDiffuse(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	material->setAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	material->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	material->setShininess(32.0f);
+	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(material, -1);
+
+	//设置光照模型
+	auto L = std::make_shared<CGLightModel>(); 
+	L->setLocalViewer(true);// 启用局部观察者，意味着视点位置会影响高光计算（更真实）
+	L->setTwoSide(true);	// 启用双面光照，使物体背面也能被正确照亮（否则背面可能看起来是黑的）。
+	L->setAmbientColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)); // 更暗的环境光
+	//e2->gocRenderStateSet()->setRenderState(L, -1); //设置节点属性
+	//添加到场景根节点
+	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(L, -1);
+	
+	//设置着色模式
+	auto S = std::make_shared<CGShadeModel>(SM_SMOOTH); 
+	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(S, -1); //设置节点属性
+	// TODO: 在此添加命令处理程序代码
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0); // 关闭之前可能开启的光源
+	glEnable(GL_NORMALIZE); // 确保法线正确
+	// 启用光照与深度测试（必须）
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST); //启用深度测试，确保物体前后关系正确显示。
+	// 更新所有视图
+	UpdateAllViews(NULL);
+}
+
+void CCG2022112465杨奎Doc::OnLightclose()
+{
+	// TODO: 在此添加命令处理程序代码
+	// 禁用光照和光源
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+
+	// 可选：禁用颜色材质和深度测试（如果你希望完全关闭相关效果）
+	glDisable(GL_COLOR_MATERIAL);
+	glDisable(GL_DEPTH_TEST);
+
+	// 可选：恢复背景色为默认（如白色）
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// 可选：移除场景根节点上的光照模型（如果有必要）
+	 mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(nullptr, -1);
+
+	// 更新所有视图
 	UpdateAllViews(NULL);
 }

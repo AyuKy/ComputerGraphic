@@ -100,4 +100,6 @@ public:
 	afx_msg void OnUpdateBtnTimer(CCmdUI* pCmdUI);
 	afx_msg void OnDrawrobot();
 	afx_msg void OnCamera();
+	afx_msg void OnLightopen();
+	afx_msg void OnLightclose();
 };

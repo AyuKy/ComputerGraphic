@@ -32,6 +32,28 @@ void CGPolygonMode::apply(const CGCamera* camera, CGRenderContext* ctx, int inde
 	}
 }
 
+//光照模型
+CGLightModel::CGLightModel()
+	: mAmbientColor(0.2f, 0.2f, 0.2f, 1.0f), mLocalViewer(false), mTwoSide(false)
+{
+}
+void CGLightModel::apply(const CGCamera*, CGRenderContext*, int) const
+{
+	glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, mLocalViewer ? 1.0f : 0.0f);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, &mAmbientColor.r);
+	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, mTwoSide ? 1.0f : 0.0f);
+}
+
+//着色模式
+CGShadeModel::CGShadeModel(EShadeModel shademodel)
+	: mShadeModel(shademodel)
+{
+}
+void CGShadeModel::apply(const CGCamera* camera, CGRenderContext* ctx, int index) const
+{
+	glShadeModel((GLenum)mShadeModel);
+}
+
 void CGRenderStateSet::setRenderState(std::shared_ptr<CGRenderState> renderstate, int index)
 {
 	if (renderstate) {
@@ -84,6 +106,9 @@ void CGRenderStateSet::apply(const CGCamera* camera, CGRenderContext* ctx)
 		}
 	}
 	for (auto itr = mRenderStates.begin(); itr != mRenderStates.end(); ++itr) {
+		if (itr->mRS->GetUpdateCallback()) {
+			itr->mRS->GetUpdateCallback()->run(itr->mRS.get(), itr->mRS->userData());
+		}
 		itr->apply(camera, ctx);
 	}
 }
