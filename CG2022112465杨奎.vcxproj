@@ -211,9 +211,11 @@
     <ClInclude Include="CGSphere.h" />
     <ClInclude Include="CGTransform.h" />
     <ClInclude Include="CInputDialog1.h" />
+    <ClInclude Include="CInputDialog2.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="glIncludes.h" />
     <ClInclude Include="glLinks.h" />
+    <ClInclude Include="LightTransform.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -247,6 +249,7 @@
     <ClCompile Include="CGSphere.cpp" />
     <ClCompile Include="CGTransform.cpp" />
     <ClCompile Include="CInputDialog1.cpp" />
+    <ClCompile Include="CInputDialog2.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -328,6 +328,8 @@ protected:
     int mFactor;
     GLushort mPattern;
 };
+
+
 //多边形
 class CGPolygonMode : public CGRenderState
 {
@@ -347,16 +349,23 @@ protected:
     EPolygonMode mBackFace;
 };
 
+
 //光源
 class CGLight : public CGRenderState
 {
 public:
-    CGLight()
-        : mPosition(0, 0, 1, 0),//w=1表示点光源，w=0表示光源在无限远处，默认与z轴平行
-        mAmbient(0.2f, 0.2f, 0.2f, 1.0f),//环境光颜色（默认灰色）
-        mDiffuse(0.7f, 0.7f, 0.7f, 1.0f),//漫反射光颜色（较亮的白色漫反射光）
-		mSpecular(1.0f, 1.0f, 1.0f, 1.0f),//镜面反射光颜色（白色镜面反射光）
-        mLightID(GL_LIGHT0) // 默认GL_LIGHT0
+    CGLight():
+        mPosition(0, 0, 1, 0), // 默认方向光，z轴正向
+        mAmbient(0.2f, 0.2f, 0.2f, 1.0f), // 默认环境光
+        mDiffuse(0.7f, 0.7f, 0.7f, 1.0f), // 默认漫反射
+        mSpecular(1.0f, 1.0f, 1.0f, 1.0f), // 默认镜面反射
+        mLightID(GL_LIGHT0), // 默认光源编号
+        mDirection(0.0f, 0.0f, -1.0f), // 默认聚光方向，指向-z
+        mSpotCutoff(180.0f), // 默认非聚光灯（180度为全向）
+        mSpotExponent(0.0f), // 默认聚光分布
+        mConstantAttenuation(1.0f), // 默认常数衰减
+        mLinearAttenuation(0.0f),   // 默认线性衰减
+        mQuadraticAttenuation(0.0f) // 默认二次衰减
     {
     }
     virtual ~CGLight() = default;
@@ -370,14 +379,34 @@ public:
         glLightfv(light, GL_AMBIENT, &mAmbient[0]);
         glLightfv(light, GL_DIFFUSE, &mDiffuse[0]);
         glLightfv(light, GL_SPECULAR, &mSpecular[0]);
+        // 新增：设置聚光灯参数
+        glLightfv(light, GL_SPOT_DIRECTION, &mDirection[0]);
+        glLightf(light, GL_SPOT_CUTOFF, mSpotCutoff);
+        glLightf(light, GL_SPOT_EXPONENT, mSpotExponent);
+        // 新增：设置衰减参数
+        glLightf(light, GL_CONSTANT_ATTENUATION, mConstantAttenuation);
+        glLightf(light, GL_LINEAR_ATTENUATION, mLinearAttenuation);
+        glLightf(light, GL_QUADRATIC_ATTENUATION, mQuadraticAttenuation);
     }
 
     void setPosition(const glm::vec4& pos) { mPosition = pos; }
     void setAmbient(const glm::vec4& amb) { mAmbient = amb; }
     void setDiffuse(const glm::vec4& diff) { mDiffuse = diff; }
     void setSpecular(const glm::vec4& spec) { mSpecular = spec; }
-    void setLightID(GLenum id) { mLightID = id; }
-
+    void setDirection(const glm::vec3& dir) { mDirection = dir; }
+    void setSpotCutoff(float cutoff) { mSpotCutoff = cutoff; }
+    void setSpotExponent(float exp) { mSpotExponent = exp; }
+    void setAttenuation(float constant, float linear, float quadratic) {
+        mConstantAttenuation = constant;
+        mLinearAttenuation = linear;
+        mQuadraticAttenuation = quadratic;
+    }
+    const glm::vec3& direction() const { return mDirection; }
+    float spotCutoff() const { return mSpotCutoff; }
+    float spotExponent() const { return mSpotExponent; }
+    float constantAttenuation() const { return mConstantAttenuation; }
+    float linearAttenuation() const { return mLinearAttenuation; }
+    float quadraticAttenuation() const { return mQuadraticAttenuation; }
     const glm::vec4& position() const { return mPosition; }
     const glm::vec4& ambient() const { return mAmbient; }
     const glm::vec4& diffuse() const { return mDiffuse; }
@@ -390,7 +419,17 @@ protected:
 	glm::vec4 mDiffuse; //漫反射光
 	glm::vec4 mSpecular; //镜面反射光
     GLenum mLightID; // GL_LIGHT0, GL_LIGHT1, ...
+
+    glm::vec3 mDirection = glm::vec3(0.0f, 0.0f, -1.0f); // 聚光灯方向
+    float mSpotCutoff = 180.0f;      // 截止角（度），180为非聚光灯
+    float mSpotExponent = 0.0f;      // 聚光分布指数
+    float mConstantAttenuation = 1.0f; // 常数衰减
+    float mLinearAttenuation = 0.0f;   // 线性衰减
+    float mQuadraticAttenuation = 0.0f;// 二次衰减
+
 };
+
+
 //光照模型
 class CGLightModel : public CGRenderState
 {

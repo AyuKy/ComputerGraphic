@@ -46,6 +46,8 @@
 #include "CInputDialog1.h"
 #include "RobotBodyTransform.h"
 #include "CGCameraOp.h"
+#include "LightTransform.h"
+#include "CInputDialog2.h"
 // CCG2022112465杨奎Doc
 
 IMPLEMENT_DYNCREATE(CCG2022112465杨奎Doc, CDocument)
@@ -74,6 +76,7 @@ BEGIN_MESSAGE_MAP(CCG2022112465杨奎Doc, CDocument)
 	ON_COMMAND(ID_Camera, &CCG2022112465杨奎Doc::OnCamera)
 	ON_COMMAND(ID_LightOpen, &CCG2022112465杨奎Doc::OnLightopen)
 	ON_COMMAND(ID_LightClose, &CCG2022112465杨奎Doc::OnLightclose)
+	ON_COMMAND(ID_CreateSpotLight, &CCG2022112465杨奎Doc::OnCreatespotlight)
 END_MESSAGE_MAP()
 
 // CCG2022112465杨奎Doc 构造/析构
@@ -92,7 +95,7 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 
 	
 	//球体模型
-	auto c = std::make_shared<CGCube>(100);
+	auto c = std::make_shared<CGCube>();
 	auto h = std::make_shared<TessellationHints>();
 	c->setTessellationHints(h);
 	c->setDisplayListEnabled(true);
@@ -102,15 +105,36 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 	auto color1 = std::make_shared<CGColor>(); //属性
 	color1->setValue(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)); //黄色
 	e1->gocRenderStateSet()->setRenderState(color1, -1); //设置节点属性
-	//auto p1 = std::make_shared<CGPolygonMode>(PM_LINE, PM_LINE); //设置线框模式
-	//e1->gocRenderStateSet()->setRenderState(p1, -1); //设置节点属性
+
 	t1->translate(100, 0, 0);
 	t1->rotate(45, 1, 1, 1);
-	//t1->scale(100, 100, 100);
+	t1->scale(50, 50, 50);
 	e1->AddChild(c);
 	t1->AddChild(e1);
-	mScene->GetSceneData()->asGroup()->AddChild(t1);
+	
+	//添加材质
+	auto material1 = std::make_shared<CGMaterial>();
+	material1->setDiffuse(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));//物体表面的漫反射颜色（黄色）
+	material1->setAmbient(glm::vec4(0.2f, 0.2f, 0.0f, 1.0f));//环境光颜色（稍微偏暗的黄色）
+	material1->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));//镜面反射光颜色（白色镜面反射光）
+	material1->setShininess(64.0f);//32-64高光系数，越大高光越集中
+	//绑定材质回调
+	//material1->SetUpdateCallback(std::make_shared<MaterialAnimCallback>());
+	e1->gocRenderStateSet()->setRenderState(material1, -1);
 
+	//设置光照模型
+	auto L1= std::make_shared<CGLightModel>();
+	L1->setLocalViewer(true);// 启用局部观察者，意味着视点位置会影响高光计算（更真实）
+	L1->setTwoSide(true);	// 启用双面光照，使物体背面也能被正确照亮（否则背面可能看起来是黑的）。
+	L1->setAmbientColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)); // 更暗的环境光
+	e1->gocRenderStateSet()->setRenderState(L1, -1); //设置节点属性
+
+	//设置着色模式
+	auto S1 = std::make_shared<CGShadeModel>(SM_SMOOTH);//平滑着色模式，让光照颜色过度更流畅
+	e1->gocRenderStateSet()->setRenderState(S1, -1);
+	
+	mScene->GetSceneData()->asGroup()->AddChild(t1);
+	
 	//长方体模型
 	auto c2 = std::make_shared<CGCube>();
 	auto h2 = std::make_shared<TessellationHints>();
@@ -127,9 +151,31 @@ CCG2022112465杨奎Doc::CCG2022112465杨奎Doc() noexcept
 
 	t2->translate(-100, 0, 0);
 	t2->rotate(45, 1, 1, 1);
-	t2->scale(100, 100, 100);
+	t2->scale(50, 50, 50);
 	e2->AddChild(c2);
 	t2->AddChild(e2);
+
+	//添加材质
+	auto material2 = std::make_shared<CGMaterial>();
+	material2->setDiffuse(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));//物体表面的漫反射颜色（蓝色）
+	material2->setAmbient(glm::vec4(0.0f, 0.0f, 0.2f, 1.0f)); //环境光颜色（稍微偏暗的蓝色）
+	material2->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)); //镜面反射光颜色（白色镜面反射光）
+	material2->setShininess(64.0f); //32-64高光系数，越大高光越集中
+	//绑定材质回调
+	//material2->SetUpdateCallback(std::make_shared<MaterialAnimCallback>());
+	e2->gocRenderStateSet()->setRenderState(material2, -1);
+
+	//设置光照模型
+	auto L2 = std::make_shared<CGLightModel>();
+	L2->setLocalViewer(true);// 启用局部观察者，意味着视点位置会影响高光计算（更真实）
+	L2->setTwoSide(true);	// 启用双面光照，使物体背面也能被正确照亮（否则背面可能看起来是黑的）。
+	L2->setAmbientColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)); // 更暗的环境光
+	e2->gocRenderStateSet()->setRenderState(L2, -1); //设置节点属性
+
+	//设置着色模式
+	auto S2 = std::make_shared<CGShadeModel>(SM_SMOOTH);
+	e2->gocRenderStateSet()->setRenderState(S2, -1);
+
 	mScene->GetSceneData()->asGroup()->AddChild(t2);
 }
 
@@ -984,10 +1030,6 @@ std::shared_ptr<CGTransform> createBoxPart(float len, float width, float height,
 	colorState->setValue(color);
 	geode->gocRenderStateSet()->setRenderState(colorState, -1);
 
-	//设置线框模式
-	auto mode = make_shared<CGPolygonMode>(PM_LINE, PM_LINE);
-	geode->gocRenderStateSet()->setRenderState(mode, -1);
-
 	auto tran = make_shared<CGTransform>();
 	tran->AddChild(geode);
 	tran->setName(name);
@@ -1163,6 +1205,35 @@ void CCG2022112465杨奎Doc::OnDrawrobot()
 	std::shared_ptr<RotateCallback> rc5 = std::make_shared<RotateCallback>();
 	RighUpperArm->setUserData(data5); //设置节点更新参数
 	RighUpperArm->SetUpdateCallback(rc5); //设置节点更新回调
+	
+	//添加光源
+	auto light = std::make_shared<CGLight>();
+	light->setPosition(glm::vec4(0.0f, 0.0f, 500.0f, 1.0f));//点光源，位置（200，200，200）
+	light->setAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 0.2f));//白色环境光
+	light->setDiffuse(glm::vec4(0.7f, 0.7f, 0.7f, 0.7f)); //白色漫反射光
+	light->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)); //白色镜面反射光
+	light->SetUpdateCallback(std::make_shared<HeadLightCallback>());//头灯回调
+	Robot->gocRenderStateSet()->setRenderState(light, 0); //添加到场景根节点
+
+
+	//添加材质
+	auto material = std::make_shared<CGMaterial>();
+	material->setDiffuse(glm::vec4(0.0f, 1.0f, 0.5f, 1.0f));
+	material->setAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	material->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	material->setShininess(64.0f);
+	//绑定材质回调
+	material->SetUpdateCallback(std::make_shared<MaterialAnimCallback>()); 
+	Robot->gocRenderStateSet()->setRenderState(material, -1);
+	//设置光照模型
+	auto L = std::make_shared<CGLightModel>();
+	L->setLocalViewer(true);// 启用局部观察者，意味着视点位置会影响高光计算（更真实）
+	L->setTwoSide(true);	// 启用双面光照，使物体背面也能被正确照亮（否则背面可能看起来是黑的）。
+	L->setAmbientColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)); // 更暗的环境光
+	Robot->gocRenderStateSet()->setRenderState(L, -1); //设置节点属性
+	//设置着色模式
+	auto S = std::make_shared<CGShadeModel>(SM_SMOOTH);
+	Robot->gocRenderStateSet()->setRenderState(S, -1);
 }
 
 
@@ -1195,44 +1266,19 @@ void CCG2022112465杨奎Doc::OnCamera()
 
 void CCG2022112465杨奎Doc::OnLightopen()
 {
-	//添加光源
-	auto light = std::make_shared<CGLight>();
-	light->setPosition(glm::vec4(0.0f, 0.0f, 500.0f, 1.0f));//点光源，位置（200，200，200）
-	light->setAmbient(glm::vec4(1.0f,1.0f,1.0f,1.0f));//白色环境光
-	light->setDiffuse(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	light->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
-	//e2->gocRenderStateSet()->setRenderState(light, 0);
-	//添加到场景根节点
-	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(light, 0);
-
-	//添加材质
-	auto material = std::make_shared<CGMaterial>();
-	material->setDiffuse(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-	material->setAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
-	material->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	material->setShininess(32.0f);
-	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(material, -1);
-
-	//设置光照模型
-	auto L = std::make_shared<CGLightModel>(); 
-	L->setLocalViewer(true);// 启用局部观察者，意味着视点位置会影响高光计算（更真实）
-	L->setTwoSide(true);	// 启用双面光照，使物体背面也能被正确照亮（否则背面可能看起来是黑的）。
-	L->setAmbientColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)); // 更暗的环境光
-	//e2->gocRenderStateSet()->setRenderState(L, -1); //设置节点属性
-	//添加到场景根节点
-	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(L, -1);
+	////添加光源
+	//auto light = std::make_shared<CGLight>();
+	//light->setPosition(glm::vec4(0.0f, 0.0f, 500.0f, 1.0f));//点光源，位置（200，200，200）
+	//light->setAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 0.2f));//白色环境光
+	//light->setDiffuse(glm::vec4(0.7f, 0.7f, 0.7f, 0.7f)); //白色漫反射光
+	//light->setSpecular(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)); //白色镜面反射光
+	//light->SetUpdateCallback(std::make_shared<HeadLightCallback>());//头灯回调
+	//mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(light, 0); //添加到场景根节点
 	
-	//设置着色模式
-	auto S = std::make_shared<CGShadeModel>(SM_SMOOTH); 
-	mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(S, -1); //设置节点属性
-	// TODO: 在此添加命令处理程序代码
 	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0); // 关闭之前可能开启的光源
 	glEnable(GL_NORMALIZE); // 确保法线正确
 	// 启用光照与深度测试（必须）
 	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST); //启用深度测试，确保物体前后关系正确显示。
 	// 更新所有视图
 	UpdateAllViews(NULL);
@@ -1243,19 +1289,67 @@ void CCG2022112465杨奎Doc::OnLightclose()
 	// TODO: 在此添加命令处理程序代码
 	// 禁用光照和光源
 	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
-
-	// 可选：禁用颜色材质和深度测试（如果你希望完全关闭相关效果）
+	// 禁用颜色材质和深度测试
 	glDisable(GL_COLOR_MATERIAL);
 	glDisable(GL_DEPTH_TEST);
-
-	// 可选：恢复背景色为默认（如白色）
+	//恢复背景色为默认（如白色）
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// 可选：移除场景根节点上的光照模型（如果有必要）
-	 mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(nullptr, -1);
-
 	// 更新所有视图
 	UpdateAllViews(NULL);
+}
+
+void CCG2022112465杨奎Doc::OnCreatespotlight()
+{
+	// TODO: 在此添加命令处理程序代码
+	CInputDialog2 dlg;
+	//添加光源
+	auto light = std::make_shared<CGLight>();
+	float X, Y, Z, dx, dy, dz, abient1, abient2, abient3, diffuse1, diffuse2, diffuse3,
+		specular1, specular2, specular3,perspective,constant,linear,quadratic;
+	if (dlg.DoModal() == IDOK) //对话框中点击了【确定】按钮，取回输入的数据
+	{ //根据实际需要使用输入的数据
+		X = dlg.pos_x;
+		Y = dlg.pos_y;
+		Z = dlg.pos_z;
+
+		dx = dlg.dx;
+		dy = dlg.dy;
+		dz = dlg.dz;
+
+		abient1 = dlg.abient1;
+		abient2 = dlg.abient2;
+		abient3 = dlg.abient3;
+
+		diffuse1 = dlg.diffuse1;
+		diffuse2 = dlg.diffuse2;
+		diffuse3 = dlg.diffuse3;
+
+		specular1 = dlg.specular1;
+		specular2 = dlg.specular2;
+		specular3 = dlg.specular3;
+
+		perspective = dlg.perspectives;
+
+		constant = dlg.constant;
+		linear = dlg.linear;
+		quadratic = dlg.quadratic;
+
+		light->setPosition(glm::vec4(X, Y, Z, 1.0f));//点光源
+		light->setDirection(glm::vec3(dx, dy, dz)); // 设置光源方向
+		light->setAmbient(glm::vec4(abient1, abient2, abient3, 0.2f));
+		light->setDiffuse(glm::vec4(diffuse1, diffuse2, diffuse3, 0.f));
+		light->setSpecular(glm::vec4(specular1, specular2, specular3, 1.0f));
+		light->setSpotCutoff(perspective); // 聚光灯角度
+		light->setSpotExponent(10.0f);  // 指数越大，光斑越集中
+		light->setAttenuation(constant,linear,quadratic); // 衰减参数
+		//添加到场景根节点
+		mScene->GetSceneData()->asGroup()->gocRenderStateSet()->setRenderState(light, 0);
+	
+		glEnable(GL_NORMALIZE); // 确保法线正确
+		glEnable(GL_LIGHTING);
+		// 启用深度测试（必须）
+		glEnable(GL_DEPTH_TEST); //启用深度测试，确保物体前后关系正确显示。
+		UpdateAllViews(NULL);
+	}
 }

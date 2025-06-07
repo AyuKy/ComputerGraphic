@@ -23,10 +23,37 @@
 #define IDS_EDIT_MENU                   306
 #define IDR_RIBBON                      307
 #define IDD_INPUT_DIALOG1               310
+#define IDD_INPUT_DIALOG2               312
 #define IDC_INPUT_VALUE1                1000
 #define IDC_INPUT_VALUE2                1001
 #define IDC_INPUT_VALUE3                1002
 #define IDC_INPUT_VALUE4                1003
+#define IDC_EDIT1_pos                   1010
+#define IDC_STATIC_textpos              1011
+#define IDC_EDIT2_pos                   1044
+#define IDC_EDIT3_pos                   1045
+#define IDC_EDIT4_dir                   1046
+#define IDC_EDIT5_dir                   1047
+#define IDC_EDIT6_dir                   1048
+#define IDC_EDIT7_abient                1049
+#define IDC_EDIT8_abient                1050
+#define IDC_EDIT9_abient                1051
+#define IDC_EDIT10_diffuse              1052
+#define IDC_EDIT11_diffuse              1053
+#define IDC_EDIT12_diffuse              1054
+#define IDC_EDIT13_specular             1055
+#define IDC_EDIT14_specular             1056
+#define IDC_EDIT15_specular             1057
+#define IDC_EDIT16_perspectives         1058
+#define IDC_EDIT17_constant             1059
+#define IDC_EDIT18_linear               1060
+#define IDC_EDIT19_quadratic            1061
+#define IDC_STATIC_textdir              1062
+#define IDC_STATIC_textabient           1063
+#define IDC_STATIC_textdiffuse          1064
+#define IDC_STATIC_textspecular         1065
+#define IDC_STATIC_textperspective      1066
+#define IDC_STATIC_textattenuation      1067
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_YScale1                      32771
 #define ID_Draw2D_LINESEG               32772
@@ -48,15 +75,15 @@
 #define ID_Camera                       32808
 #define ID_LightClose                   32809
 #define ID_LightOpen                    32810
-#define ID_BUTTON2                      32811
+#define ID_CreateSpotLight              32812
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32812
-#define _APS_NEXT_CONTROL_VALUE         1004
+#define _APS_NEXT_RESOURCE_VALUE        314
+#define _APS_NEXT_COMMAND_VALUE         32813
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

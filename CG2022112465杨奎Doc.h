@@ -102,4 +102,5 @@ public:
 	afx_msg void OnCamera();
 	afx_msg void OnLightopen();
 	afx_msg void OnLightclose();
+	afx_msg void OnCreatespotlight();
 };

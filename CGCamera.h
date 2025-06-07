@@ -76,7 +76,7 @@ protected:
 	GLfloat mTop = 200.0f;
 	GLfloat mNearPlane = 100.0f; //近截面（可视为Eye到近截面的距离）
 	GLfloat mFarPlane = 10000.0f; //远截面（最远能看多远）
-	glm::vec3 mEye = glm::vec3(0, 0, 200); //相机位置（影响透视投影）
+	glm::vec3 mEye = glm::vec3(0, 0, 400); //相机位置（影响透视投影）
 	glm::vec3 mTarget = glm::vec3(0, 0, 0); //被观察点
 	glm::vec3 mUp = glm::vec3(0, 1, 0); //向上方向（相机坐标系Y轴对应向量）
 
@@ -84,6 +84,8 @@ public:
 	void setViewport(Viewport* viewport) { mViewport = std::shared_ptr<Viewport>(viewport); }
 	Viewport* viewport() { return mViewport.get(); }
 	const Viewport* viewport() const { return mViewport.get(); }
+	glm::vec3 MEye() { return mEye; }
+	glm::vec3 MTarget() { return mTarget; }
 
 public:
 	//边界调整
